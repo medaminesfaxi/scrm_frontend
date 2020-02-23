@@ -2,16 +2,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 380px;
   flex-direction: column;
-  width: 350px;
-  margin: 16px auto;
   background: #fff;
   padding: 18px 46px;
-  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.12);
 }
 
-.container p:nth-child(1) {
-  margin: 0;
+article {
+  background: url('../logo.png') no-repeat bottom left;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+article p {
+  margin: 16px;
 }
 
 .input__icon {

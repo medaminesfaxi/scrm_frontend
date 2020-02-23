@@ -128,8 +128,6 @@ class SignupForm extends React.Component {
               Sign Up
             </Button>
           </Form>
-        </div>
-        <div className={styles.container}>
           <p>
             Have an account? <Link to="/">Login</Link>
           </p>

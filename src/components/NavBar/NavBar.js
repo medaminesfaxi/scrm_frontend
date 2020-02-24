@@ -5,10 +5,11 @@
 import React, { Component } from 'react';
 import styles from './navbar.module.css';
 import { Icon, Badge, Avatar, Dropdown } from 'antd';
-import { Link } from 'react-router-dom';
+import { NavLink, Link, withRouter } from 'react-router-dom';
 import logo from '../../header_logo.png';
 import SubMenu from './SubMenu';
-export default class NavBar extends Component {
+import { authService } from './../../services/authService';
+class NavBar extends Component {
   state = {
     status: 'success'
   };
@@ -18,6 +19,11 @@ export default class NavBar extends Component {
     status = this.state.status === 'warning' ? 'success' : 'warning';
     this.setState({ status });
   };
+
+  logout = () => {
+    authService.logout();
+    this.props.history.push('/login');
+  };
   render() {
     const { username, avatarSrc, is_admin } = this.props;
     return (
@@ -25,12 +31,16 @@ export default class NavBar extends Component {
         <ul>
           <section>
             <div className={styles.logo}>
-              <Link to="/" style={{ textAlign: 'center' }}>
+              <Link to="/dashboard" style={{ textAlign: 'center' }}>
                 <img src={logo} alt="vneuron" />
               </Link>
             </div>
             <div>
-              <Link to="/conversations" style={{ textAlign: 'center' }}>
+              <NavLink
+                activeClassName="selected"
+                to="/conversations"
+                style={{ textAlign: 'center' }}
+              >
                 <Badge count={5} offset={['-10,0']}>
                   <Icon
                     type="message"
@@ -38,30 +48,39 @@ export default class NavBar extends Component {
                     style={{ fontSize: '28px' }}
                   />
                 </Badge>
-              </Link>
+              </NavLink>
             </div>
             {is_admin ? (
               <>
                 <div>
-                  <Link to="/" style={{ textAlign: 'center' }}>
+                  <NavLink
+                    exact={true}
+                    activeClassName="selected"
+                    to="/dashboard"
+                    style={{ textAlign: 'center' }}
+                  >
                     <Icon
                       type="dashboard"
                       theme="twoTone"
                       style={{ fontSize: '28px' }}
                     />
-                  </Link>
+                  </NavLink>
                 </div>
                 <div>
-                  <Link to="/users" style={{ textAlign: 'center' }}>
+                  <NavLink
+                    activeClassName="selected"
+                    to="/users"
+                    style={{ textAlign: 'center' }}
+                  >
                     <Icon type="user" style={{ fontSize: '28px' }} />
-                  </Link>
+                  </NavLink>
                 </div>
               </>
             ) : null}
           </section>
           <Dropdown
             placement="topCenter"
-            overlay={SubMenu(this.onClick, this.state.status)}
+            overlay={SubMenu(this.onClick, this.state.status, this.logout)}
           >
             <div className="right__items">
               <Badge
@@ -85,3 +104,4 @@ export default class NavBar extends Component {
     );
   }
 }
+export default withRouter(NavBar);

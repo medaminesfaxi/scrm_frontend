@@ -1,9 +1,9 @@
 import React from 'react';
-import axios from 'axios';
 import { Form, Input, Button, Icon } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
 import { emailPattern } from './../shared/utils';
+import { authService } from './../services/authService';
 
 class SignupForm extends React.Component {
   state = {
@@ -17,15 +17,10 @@ class SignupForm extends React.Component {
       if (!err) {
         try {
           this.setState({ loading: true });
-          console.log(process.env.REACT_APP_API_URL);
-          const res = await axios.post(process.env.REACT_APP_API_URL, {
-            email: values.email,
-            password: values.password
-          });
-          console.log(res);
+          authService.login(values.email, values.password);
+          this.props.history.push('/conversations');
         } catch (e) {
           this.setState({ loading: false });
-          console.log(e);
         }
       }
     });
@@ -52,11 +47,14 @@ class SignupForm extends React.Component {
     callback();
   };
   render() {
+    if (authService.getCurrentUser()) {
+      return <Redirect to="/conversations" />;
+    }
     const { getFieldDecorator } = this.props.form;
     const { loading } = this.state;
     return (
       <article>
-        <div className={styles.container}>
+        <div className="container">
           <h1>Vneuron SCRM</h1>
           <p>Create an admin account.</p>
           <Form>
@@ -129,7 +127,7 @@ class SignupForm extends React.Component {
             </Button>
           </Form>
           <p>
-            Have an account? <Link to="/">Login</Link>
+            Have an account? <Link to="/login">Login</Link>
           </p>
         </div>
       </article>
@@ -137,4 +135,4 @@ class SignupForm extends React.Component {
   }
 }
 const Signup = Form.create({ name: 'SignupForm' })(SignupForm);
-export default Signup;
+export default withRouter(Signup);

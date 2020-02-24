@@ -1,9 +1,9 @@
 import React from 'react';
-import axios from 'axios';
 import { Form, Icon, Input, Button } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
 import { emailPattern } from './../shared/utils';
+import { authService } from './../services/authService';
 
 class LoginForm extends React.Component {
   state = {
@@ -11,15 +11,13 @@ class LoginForm extends React.Component {
   };
   handleSubmit = e => {
     e.preventDefault();
-    this.props.form.validateFields(async (err, values) => {
+    this.props.form.validateFields((err, values) => {
       if (!err) {
         this.setState({ loading: true });
-
         try {
-          const res = await axios.post(process.env.REACT_APP_API_URL, {
-            email: values.email,
-            password: values.password
-          });
+          authService.login(values.email, values.password);
+          this.props.history.push('/conversations');
+          this.setState({ loading: false });
         } catch (e) {
           this.setState({ loading: false });
         }
@@ -27,8 +25,12 @@ class LoginForm extends React.Component {
     });
   };
   render() {
+    if (authService.getCurrentUser()) {
+      return <Redirect to="/conversations" />;
+    }
     const { getFieldDecorator } = this.props.form;
     const { loading } = this.state;
+
     return (
       <div className={styles.wrapper}>
         <article>
@@ -86,4 +88,4 @@ class LoginForm extends React.Component {
   }
 }
 const Login = Form.create({ name: 'LoginForm' })(LoginForm);
-export default Login;
+export default withRouter(Login);

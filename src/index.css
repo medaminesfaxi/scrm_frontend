@@ -1,11 +1,19 @@
 /* customizing antd */
-
+body {
+  height: 100vh;
+  overflow: hidden;
+}
 .ant-form-explain {
   font-size: 12px;
 }
 
 .ant-btn[disabled] {
   cursor: inherit;
+}
+h1 {
+  color: #293347;
+  line-height: 1.125;
+  margin-bottom: 1.5rem;
 }
 
 .ant-dropdown-menu-item a {
@@ -15,7 +23,7 @@
   padding: 14px 65px 14px 41px;
   display: block;
   font-size: 0.875rem;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   text-align: inherit;
   white-space: nowrap;
   clear: both;
@@ -26,4 +34,9 @@ img {
   vertical-align: inherit !important;
   width: 100%;
   height: auto;
+}
+
+.selected {
+  margin-bottom: -3px;
+  border-bottom: 3px solid #a0c5e8;
 }

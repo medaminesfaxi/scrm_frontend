@@ -4,11 +4,21 @@
   justify-content: center;
   width: 380px;
   flex-direction: column;
+  border: 1px solid #e6ecf8;
+  transition: all 0.3s;
   background: #fff;
-  padding: 18px 46px;
+  padding: 86px 46px;
+  border-radius: 8px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.12);
 }
-
+.bigger__container {
+  width: 600px;
+  padding: 46px 65px;
+  box-shadow: 0 0 4px #2f53ea;
+  position: relative;
+  top: -80px;
+  border-radius: 8px;
+}
 article {
   background: url('../logo.png') no-repeat bottom left;
   height: 100vh;

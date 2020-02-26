@@ -28,7 +28,9 @@ h1 {
   clear: both;
   font-weight: 600;
 }
-
+.ant-message-notice-content {
+  padding: 18px 16px;
+}
 img {
   vertical-align: inherit !important;
   width: 100%;

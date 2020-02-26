@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './styles.module.css';
 import { Form, Input, Icon, Button } from 'antd';
+import { notification } from './../shared/utils';
 
 class SettingsForm extends Component {
   state = {
@@ -13,7 +14,7 @@ class SettingsForm extends Component {
       if (!err) {
         try {
           this.setState({ loading: true });
-          this.props.history.push('/conversations');
+          notification('success', 'Updated  succesfully!');
         } catch (e) {
           this.setState({ loading: false });
         }

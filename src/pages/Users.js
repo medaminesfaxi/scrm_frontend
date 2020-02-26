@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import Highlighter from 'react-highlight-words';
 import AddUserDrawer from './../components/AddUserDrawer';
+import EditUserDrawer from './../components/EditUserDrawer';
 
 const data = [
   {
@@ -99,14 +100,11 @@ export default class Users extends Component {
                 ></Button>
               </Popconfirm>
               <Divider type="vertical"></Divider>
-              <Button
+              <EditUserDrawer
+                user_id={record.key}
+                username={record.user}
                 loading={this.state.buttonLoading}
-                shape="circle"
-                onClick={this.handleEdit}
-                type="primary"
-                size="small"
-                icon="edit"
-              ></Button>
+              />
             </>
           ) : null
       }
@@ -201,10 +199,6 @@ export default class Users extends Component {
     const dataSource = [...this.state.dataSource];
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
   };
-  handleEdit = key => {
-    console.log('edit');
-  };
-
   render() {
     return (
       <>

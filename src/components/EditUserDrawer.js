@@ -1,8 +1,8 @@
 import React from 'react';
 import { Drawer, Button } from 'antd';
-import AddUserForm from './AddUserForm';
+import EditUserForm from './EditUserForm';
 
-class AddUserDrawer extends React.Component {
+class EditUserDrawer extends React.Component {
   state = {
     visible: false,
     confirmLoading: false
@@ -28,30 +28,32 @@ class AddUserDrawer extends React.Component {
 
   render() {
     const { visible } = this.state;
+    const { loading, username, user_id } = this.props;
     return (
-      <div>
+      <>
         <Button
-          type="primary"
-          icon="plus"
-          style={{ marginBottom: '22px' }}
+          loading={loading}
+          shape="circle"
           onClick={this.showModal}
-        >
-          Add a new agent
-        </Button>
+          type="primary"
+          size="small"
+          icon="edit"
+        ></Button>
         <Drawer
-          title="Add a new user"
+          title={'Edit user ' + username + ' #' + user_id}
           width={460}
           footer={null}
           onClose={this.handleCancel}
           visible={visible}
         >
-          <AddUserForm
+          <EditUserForm
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
+            user_id={user_id}
           />
         </Drawer>
-      </div>
+      </>
     );
   }
 }
-export default AddUserDrawer;
+export default EditUserDrawer;

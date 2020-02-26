@@ -1,4 +1,15 @@
 // import { authService } from '../services/authService';
+import { message } from 'antd';
+
+/* type : error || success */
+export const notification = (type, msg) => {
+  message.config({
+    duration: 2,
+    top: 120
+  });
+  if (type === 'success') message.success(msg);
+  else message.error(msg);
+};
 
 /* email pattern */
 export const emailPattern = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

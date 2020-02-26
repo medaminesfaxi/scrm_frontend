@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, Button, Icon } from 'antd';
 import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
-import { emailPattern } from './../shared/utils';
+import { emailPattern, notification } from './../shared/utils';
 import { authService } from './../services/authService';
 
 class SignupForm extends React.Component {
@@ -18,7 +18,7 @@ class SignupForm extends React.Component {
         try {
           this.setState({ loading: true });
           authService.login(values.email, values.password);
-          this.props.history.push('/conversations');
+          notification('success', 'Signed up succesfully!');
         } catch (e) {
           this.setState({ loading: false });
         }

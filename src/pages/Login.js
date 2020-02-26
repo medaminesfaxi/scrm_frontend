@@ -2,9 +2,8 @@ import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
-import { emailPattern } from './../shared/utils';
+import { emailPattern, notification } from './../shared/utils';
 import { authService } from './../services/authService';
-
 class LoginForm extends React.Component {
   state = {
     loading: false
@@ -16,8 +15,8 @@ class LoginForm extends React.Component {
         this.setState({ loading: true });
         try {
           authService.login(values.email, values.password);
-          this.props.history.push('/conversations');
           this.setState({ loading: false });
+          notification('success', 'Connected!');
         } catch (e) {
           this.setState({ loading: false });
         }

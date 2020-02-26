@@ -46,6 +46,9 @@ class SettingsForm extends Component {
     const { loading } = this.state;
     return (
       <article>
+        <div className={styles.banner}>
+          <h1>Settings</h1>
+        </div>
         <div className={styles.container + '  ' + styles.bigger__container}>
           <h1>Reset your password</h1>
           <Form>

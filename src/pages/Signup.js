@@ -54,7 +54,7 @@ class SignupForm extends React.Component {
     const { loading } = this.state;
     return (
       <article>
-        <div className="container">
+        <div className={styles.container}>
           <h1>Vneuron SCRM</h1>
           <p>Create an admin account.</p>
           <Form>
@@ -105,7 +105,10 @@ class SignupForm extends React.Component {
             <Form.Item hasFeedback>
               {getFieldDecorator('confirm', {
                 rules: [
-                  { required: true, message: 'Please confirm your password!' },
+                  {
+                    required: true,
+                    message: 'Please confirm your password!'
+                  },
                   { validator: this.compareToFirstPassword }
                 ]
               })(

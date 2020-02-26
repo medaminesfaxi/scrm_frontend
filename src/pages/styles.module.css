@@ -1,26 +1,57 @@
 .container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 380px;
+  width: 680px;
   flex-direction: column;
   border: 1px solid #e6ecf8;
   transition: all 0.3s;
   background: #fff;
-  padding: 86px 46px;
+  padding: 56px 36px;
   border-radius: 8px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.12);
+}
+.table__container {
+  padding: 32px 18px !important;
+  background: #fff;
+  z-index: 1;
+  width: 960px !important;
 }
 .bigger__container {
   width: 600px;
   padding: 46px 65px;
-  box-shadow: 0 0 4px #2f53ea;
+  box-shadow: 0 0 4px #6782ee;
   position: relative;
   top: -80px;
   border-radius: 8px;
 }
+
+.banner {
+  display: flex;
+  justify-content: center;
+  padding: 36px;
+  width: 100%;
+  background: #5553b7;
+  height: 320px;
+  position: absolute;
+  top: 84px;
+}
+.banner h1 {
+  font-size: 42px;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+}
+.banner h1::after {
+  content: '';
+  display: block;
+  margin-top: 4px;
+  width: 70px;
+  height: 4px;
+  background: #fff;
+}
 article {
   background: url('../logo.png') no-repeat bottom left;
+  background-size: 22%;
   height: 100vh;
   display: flex;
   align-items: center;

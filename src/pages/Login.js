@@ -32,58 +32,57 @@ class LoginForm extends React.Component {
     const { loading } = this.state;
 
     return (
-      <div className={styles.wrapper}>
-        <article>
-          <div className={styles.container}>
-            <h1>Vneuron SCRM</h1>
-            <p>Login to your account.</p>
-            <Form>
-              <Form.Item>
-                {getFieldDecorator('email', {
-                  rules: [
-                    { required: true, message: 'Please input your email!' },
-                    {
-                      pattern: emailPattern,
-                      message: 'Please input a valid email!'
-                    }
-                  ]
-                })(
-                  <Input
-                    prefix={<Icon type="mail" className={styles.input__icon} />}
-                    placeholder="Email"
-                  />
-                )}
-              </Form.Item>
-              <Form.Item>
-                {getFieldDecorator('password', {
-                  rules: [
-                    { required: true, message: 'Please input your password!' },
-                    { min: 6 }
-                  ]
-                })(
-                  <Input.Password
-                    prefix={<Icon type="lock" className={styles.input__icon} />}
-                    type="password"
-                    placeholder="Password"
-                  />
-                )}
-              </Form.Item>
-              <Button
-                disabled={loading}
-                type="primary"
-                htmlType="submit"
-                className={styles.btn}
-                onClick={this.handleSubmit}
-              >
-                Log in
-              </Button>
-            </Form>
-            <p>
-              Don't have an account? <Link to="/signup">Sign up</Link>
-            </p>
-          </div>
-        </article>
-      </div>
+      <article>
+        <div className={styles.container}>
+          <h1>Vneuron SCRM</h1>
+          <p>Login to your account.</p>
+          <Form>
+            <Form.Item>
+              {getFieldDecorator('email', {
+                rules: [
+                  { required: true, message: 'Please input your email!' },
+                  {
+                    pattern: emailPattern,
+                    message: 'Please input a valid email!'
+                  }
+                ]
+              })(
+                <Input
+                  prefix={<Icon type="mail" className={styles.input__icon} />}
+                  placeholder="Email"
+                />
+              )}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator('password', {
+                rules: [
+                  { required: true, message: 'Please input your password!' },
+                  { min: 6 }
+                ]
+              })(
+                <Input.Password
+                  prefix={<Icon type="lock" className={styles.input__icon} />}
+                  type="password"
+                  placeholder="Password"
+                />
+              )}
+              <Link to="/reset">Forgot password?</Link>
+            </Form.Item>
+            <Button
+              disabled={loading}
+              type="primary"
+              htmlType="submit"
+              className={styles.btn}
+              onClick={this.handleSubmit}
+            >
+              Log in
+            </Button>
+          </Form>
+          <p>
+            Don't have an account? <Link to="/signup">Sign up</Link>
+          </p>
+        </div>
+      </article>
     );
   }
 }

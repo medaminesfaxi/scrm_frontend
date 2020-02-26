@@ -6,7 +6,6 @@ body {
 .ant-form-explain {
   font-size: 12px;
 }
-
 .ant-btn[disabled] {
   cursor: inherit;
 }
@@ -37,6 +36,9 @@ img {
 }
 
 .selected {
-  margin-bottom: -3px;
-  border-bottom: 3px solid #a0c5e8;
+  margin-bottom: -4px;
+  border-bottom: 4px solid #a0c5e8;
+}
+.ant-form {
+  width: 320px !important;
 }

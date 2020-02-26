@@ -24,6 +24,9 @@ class AccountForm extends Component {
     const { avatarSrc } = this.props;
     return (
       <article>
+        <div className={styles.banner}>
+          <h1>Account</h1>
+        </div>
         <div className={styles.container + '  ' + styles.bigger__container}>
           <input
             id="upload"
@@ -52,7 +55,7 @@ class AccountForm extends Component {
               })(
                 <Input
                   prefix={<Icon type="phone" className={styles.input__icon} />}
-                  placeholder=""
+                  placeholder="Phone number"
                 />
               )}
             </Form.Item>

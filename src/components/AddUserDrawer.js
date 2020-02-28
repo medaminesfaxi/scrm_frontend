@@ -46,8 +46,9 @@ class AddUserDrawer extends React.Component {
           visible={visible}
         >
           <AddUserForm
-            handleCancel={this.handleCancel}
             handleOk={this.handleOk}
+            handleCancel={this.handleCancel}
+            handleCreateUser={this.props.handleCreateUser}
           />
         </Drawer>
       </div>

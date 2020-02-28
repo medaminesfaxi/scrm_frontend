@@ -1,18 +1,28 @@
-/* customizing antd */
 body {
   height: 100vh;
   overflow: hidden;
-}
-.ant-form-explain {
-  font-size: 12px;
-}
-.ant-btn[disabled] {
-  cursor: inherit;
 }
 h1 {
   color: #293347;
   line-height: 1.125;
   margin-bottom: 1.5rem;
+}
+img {
+  vertical-align: inherit !important;
+  width: 100%;
+  height: auto;
+}
+
+.selected {
+  border-top: 6px solid #a0c5e8;
+}
+
+/* customizing antd */
+.ant-form-explain {
+  font-size: 12px;
+}
+.ant-btn[disabled] {
+  cursor: inherit;
 }
 
 .ant-dropdown-menu-item a {
@@ -31,16 +41,47 @@ h1 {
 .ant-message-notice-content {
   padding: 18px 16px;
 }
-img {
-  vertical-align: inherit !important;
-  width: 100%;
-  height: auto;
-}
-
-.selected {
-  margin-bottom: -4px;
-  border-bottom: 4px solid #a0c5e8;
-}
 .ant-form {
   width: 320px !important;
 }
+.ant-tabs-tab {
+  width: 109px;
+  text-align: center;
+}
+.ant-tabs-tab-active {
+  background: #5553b7 !important;
+  color: #fff !important;
+}
+.ant-tabs-tabpane-active .ant-card-hoverable:hover {
+  background: #f3f6fa !important;
+}
+
+/* .rcw-launcher {
+  display: none;
+}
+.react-chat-row {
+  width: 100% !important;
+}
+.react-chat-container {
+  margin: 0 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+}
+.react-chat-viewerBox {
+  background: #f5f5fa !important;
+  box-shadow: 0 0 4px #6782ee;
+  border: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  border: none !important;
+  min-height: calc(100vh - 130px) !important;
+}
+.react-chat-textarea {
+  border: #a0c5e8 !important;
+}
+.react-chat-sendButton {
+
+} */

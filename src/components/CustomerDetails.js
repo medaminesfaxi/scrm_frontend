@@ -1,0 +1,39 @@
+import React from 'react';
+import { Card, Avatar } from 'antd';
+import styles from '../pages/styles.module.css';
+
+const { Meta } = Card;
+
+class CustomerDetails extends React.Component {
+  state = {
+    loading: false
+  };
+
+  render() {
+    const { loading } = this.state;
+    return (
+      <div style={{ width: '20%' }}>
+        <Card
+          style={{ width: '100%', marginTop: 4, height: '100vh' }}
+          loading={loading}
+          hoverable
+          cover={
+            <>
+              <div className={styles.banner__card}>
+                <h1>Customer Details</h1>
+                <Avatar
+                  size={86}
+                  icon="user"
+                  style={{ position: 'absolute', top: '115px' }}
+                />
+              </div>
+            </>
+          }
+        >
+          <Meta title="username" description="This is the description" />
+        </Card>
+      </div>
+    );
+  }
+}
+export default CustomerDetails;

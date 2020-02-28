@@ -18,31 +18,18 @@ const data = [
   {
     key: '1',
     avatar: '',
-    user: 'Mohamed amine',
+    fullname: 'Mohamed amine',
     skills: ['exmple 1', 'exemple 2'],
+    languages: ['arabic', 'english'],
     is_admin: true
   },
   {
     key: '2',
     avatar: '',
-    user: 'Mohamed amine',
+    fullname: 'Mohamed amine',
     skills: ['exmple 1', 'exemple 2'],
-    is_admin: true
-  },
-  {
-    key: '3',
-    avatar:
-      'https://scontent.ftun11-1.fna.fbcdn.net/v/t1.0-9/56196777_2370263756337563_5897750826310434816_n.jpg?_nc_cat=105&_nc_sid=85a577&_nc_ohc=l-JoEUse1d4AX-GM_Gm&_nc_ht=scontent.ftun11-1.fna&oh=828cc2709b0c837cd67159c0f60467f0&oe=5EF36B5E',
-    user: 'Mohamed amine',
-    skills: ['exmple 1', 'exemple 2'],
-    is_admin: true
-  },
-  {
-    key: '4',
-    avatar: '',
-    user: 'Mohamed amine',
-    skills: ['exmple 1', 'exemple 2'],
-    is_admin: true
+    languages: ['french', 'english'],
+    is_admin: false
   }
 ];
 
@@ -59,9 +46,9 @@ export default class Users extends Component {
       },
       {
         title: 'User',
-        dataIndex: 'user',
-        key: 'user',
-        ...this.getColumnSearchProps('user')
+        dataIndex: 'fullname',
+        key: 'fullname',
+        ...this.getColumnSearchProps('fullname')
       },
       {
         title: 'Skills',
@@ -69,11 +56,33 @@ export default class Users extends Component {
         key: 'skills',
         render: skills => (
           <span>
-            {skills.map(skill => {
-              let color = skill.length > 8 ? 'geekblue' : 'green';
+            {skills.map((skill, index) => {
+              const colors = ['#2db7f5', '#87d068', '#108ee9'];
               return (
-                <Tag color={color} key={skill}>
+                <Tag color={colors[index]} key={skill}>
                   {skill.toUpperCase()}
+                </Tag>
+              );
+            })}
+          </span>
+        )
+      },
+      {
+        title: 'Languages',
+        dataIndex: 'languages',
+        key: 'languages',
+        render: languages => (
+          <span>
+            {languages.map(language => {
+              const langs = { french: 'FR', arabic: 'AR', english: 'EN' };
+              const colors = {
+                french: 'geekblue',
+                arabic: 'purple',
+                english: 'volcano'
+              };
+              return (
+                <Tag color={colors[language]} key={language}>
+                  {langs[language]}
                 </Tag>
               );
             })}
@@ -94,7 +103,6 @@ export default class Users extends Component {
                   loading={this.state.buttonLoading}
                   shape="circle"
                   type="danger"
-                  onClick={this.handleDelete}
                   size="small"
                   icon="delete"
                 ></Button>
@@ -107,6 +115,24 @@ export default class Users extends Component {
               />
             </>
           ) : null
+      },
+      {
+        title: 'Admin',
+        dataIndex: 'is_admin',
+        render: (text, record) =>
+          text ? (
+            <Icon
+              type="safety-certificate"
+              theme="filled"
+              style={{ fontSize: '22px', marginLeft: '18px', color: '#52c41a' }}
+            />
+          ) : (
+            <Icon
+              type="safety-certificate"
+              theme="filled"
+              style={{ fontSize: '22px', marginLeft: '18px', color: '#ccc' }}
+            />
+          )
       }
     ];
   }
@@ -199,6 +225,23 @@ export default class Users extends Component {
     const dataSource = [...this.state.dataSource];
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
   };
+  handleCreateUser = values => {
+    const { fullname, skills, is_admin, languages } = values;
+    let newUser = {
+      key: parseInt(
+        this.state.dataSource[this.state.dataSource.length - 1].key + 1
+      ).toString(),
+      fullname,
+      avatar: '',
+      skills,
+      is_admin,
+      languages
+    };
+    let ds = [...this.state.dataSource];
+    ds.push(newUser);
+    this.setState({ dataSource: ds });
+  };
+
   render() {
     return (
       <>
@@ -209,8 +252,8 @@ export default class Users extends Component {
           <div
             className={styles.bigger__container + ' ' + styles.table__container}
           >
-            <AddUserDrawer />
-            <Table columns={this.columns} dataSource={data} />
+            <AddUserDrawer handleCreateUser={this.handleCreateUser} />
+            <Table columns={this.columns} dataSource={this.state.dataSource} />
           </div>
         </article>
       </>

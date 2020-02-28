@@ -1,17 +1,17 @@
 import React from 'react';
-import { Form, Input, Button, Icon } from 'antd';
+import { Form, Input, Button, Icon, Switch } from 'antd';
 import styles from '../pages/styles.module.css';
 import { emailPattern } from './../shared/utils';
 import { Checkbox } from 'antd';
 
 const CheckboxGroup = Checkbox.Group;
-const defaultCheckedList = ['Mangement', 'Finance'];
 const plainOptions = ['Mangement', 'Finance', 'IT'];
-const plainOptions_two = ['French', 'English', 'Arabic'];
+const plainOptions_two = ['french', 'english', 'arabic'];
 class AddUserForm extends React.Component {
   state = {
-    checkedListSkills: defaultCheckedList,
+    checkedListSkills: [],
     checkedListLanguages: [],
+    is_admin: false,
     confirmDirty: false,
     loading: false
   };
@@ -22,6 +22,9 @@ class AddUserForm extends React.Component {
   onChangeLanguages = checkedListLanguages => {
     this.setState({ checkedListLanguages });
   };
+  onChangeAdmin = checked => {
+    this.setState({ is_admin: checked });
+  };
 
   handleSubmit = e => {
     e.preventDefault();
@@ -29,8 +32,21 @@ class AddUserForm extends React.Component {
       if (!err) {
         try {
           this.setState({ loading: true });
+          let user = {
+            skills: this.state.checkedListSkills,
+            languages: this.state.checkedListLanguages,
+            is_admin: this.state.is_admin,
+            ...values
+          };
+          this.props.handleCreateUser(user);
           this.props.handleOk();
           this.props.form.resetFields();
+          this.setState({
+            checkedListSkills: [],
+            checkedListLanguages: [],
+            is_admin: false
+          });
+          this.setState({ loading: false });
         } catch (e) {
           this.setState({ loading: false });
         }
@@ -70,6 +86,13 @@ class AddUserForm extends React.Component {
         }}
       >
         <Form>
+          <Form.Item>
+            Admin :{'   '}
+            <Switch
+              checked={this.state.is_admin}
+              onChange={this.onChangeAdmin}
+            />
+          </Form.Item>
           <Form.Item hasFeedback>
             {getFieldDecorator('fullname', {
               rules: [

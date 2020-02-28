@@ -1,3 +1,20 @@
+main {
+  display: flex;
+  justify-content: space-between;
+  background: #f0f4f9;
+}
+article {
+  background: url('../logo.png') no-repeat bottom left;
+  background-size: 22%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+article p {
+  margin: 16px;
+}
 .container {
   display: flex;
   align-items: center;
@@ -41,26 +58,27 @@
   text-align: center;
   text-transform: uppercase;
 }
-.banner h1::after {
+.banner__card {
+  background: #5553b7;
+  position: relative;
+  height: 150px;
+  display: flex;
+  margin-bottom: 50px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.banner__card h1 {
+  color: white;
+}
+.banner h1::after,
+.banner__card h1::after {
   content: '';
   display: block;
   margin-top: 4px;
   width: 70px;
   height: 4px;
   background: #fff;
-}
-article {
-  background: url('../logo.png') no-repeat bottom left;
-  background-size: 22%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-article p {
-  margin: 16px;
 }
 
 .input__icon {

@@ -4,13 +4,16 @@ import { message } from 'antd';
 /* type : error || success */
 export const notification = (type, msg) => {
   message.config({
-    duration: 2,
-    top: 120
+    duration: 1,
+    top: 20
   });
   if (type === 'success') message.success(msg);
   else message.error(msg);
 };
-
+/* format text max symboles 27 */
+export const formatText = text => {
+  return text.substr(0, 27) + '...';
+};
 /* email pattern */
 export const emailPattern = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 

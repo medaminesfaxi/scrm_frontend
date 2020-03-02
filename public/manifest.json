@@ -1,7 +1,7 @@
 {
   "short_name": "SCRM",
   "name": "SCRM",
-  "start_url": ".",
+  "start_url": "./login",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"

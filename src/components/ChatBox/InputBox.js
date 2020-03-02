@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Icon } from 'antd';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -67,10 +66,3 @@ export default function InputBox(props) {
     </div>
   );
 }
-
-InputBox.propTypes = {
-  onSendMessage: PropTypes.func,
-  disabled: PropTypes.bool,
-  disabledInputPlaceholder: PropTypes.string,
-  placeholder: PropTypes.string
-};

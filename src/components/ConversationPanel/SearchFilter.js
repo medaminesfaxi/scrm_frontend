@@ -1,30 +1,34 @@
 import React, { Component } from 'react';
-import { Button, Tooltip, Checkbox, Divider } from 'antd';
+import { Button, Tooltip, Checkbox, Divider, Input } from 'antd';
+
 const CheckboxGroup = Checkbox.Group;
-// const { Search } = Input;
+const { Search } = Input;
 class SearchFilter extends Component {
   state = {
-    filterVisible: false
+    filterVisible: false,
+    searchLoading: false
   };
   toggleFilters = () => {
     this.setState({ filterVisible: !this.state.filterVisible });
   };
+  handleSearchByInput = () => {};
   render() {
     return (
       <>
         <div style={{ display: 'flex' }}>
-          {/* <Search
+          <Search
+            style={{ margin: '0px 8px' }}
             onSearch={this.props.handleSearchByInput}
             placeholder="search..."
             loading={this.props.searchLoading}
             enterButton
-          /> */}
+          />
           <Tooltip placement="top" title={'Filter'}>
             <Button icon="filter" type="primary" onClick={this.toggleFilters} />
           </Tooltip>
         </div>
         {this.state.filterVisible ? (
-          <div style={{ margin: '26px 0' }}>
+          <div style={{ margin: '12px 0' }}>
             <h3>Filter</h3>
             <CheckboxGroup
               value={this.props.checkedTags}

@@ -16,7 +16,6 @@ class CustomerDetails extends React.Component {
         <Card
           style={{ width: '100%', marginTop: 4, height: '100vh' }}
           loading={loading}
-          hoverable
           cover={
             <>
               <div className={styles.banner__card}>

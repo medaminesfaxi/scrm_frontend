@@ -15,4 +15,20 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
+  <script>
+    var realWidth = 300;
+    adjustSize();
+
+    window.addEventListener('resize', adjustSize);
+
+    function adjustSize() {
+      var currWidth = window.screen.availWidth;
+      if (realWidth > currWidth) {
+        currWidth = realWidth;
+      }
+      var scale = currWidth / realWidth;
+      document.getElementById('gameframe').style.transform =
+        'scale(' + scale + ')';
+    }
+  </script>
 </html>

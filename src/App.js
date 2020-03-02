@@ -20,6 +20,7 @@ class App extends Component {
             <Route path="/login" component={Login} />
             <Route path="/reset" component={ResetPassword} />
             <Route path="/Signup" component={Signup} />
+            <PrivateRoute path="/conversations/:id" component={Conversations} />
             <PrivateRoute path="/conversations" component={Conversations} />
             <PrivateRoute path="/account" component={Account} />
             <PrivateRoute path="/settings" component={Settings} />

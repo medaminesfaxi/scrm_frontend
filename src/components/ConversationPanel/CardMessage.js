@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Avatar, Icon } from 'antd';
 import { formatText } from '../../shared/utils';
+import { withRouter } from 'react-router-dom';
 
 const colors = {
   facebook: '#3b5998',
@@ -8,16 +9,21 @@ const colors = {
 };
 const { Meta } = Card;
 class CardMessage extends Component {
-  state = {
-    loading: false
-  };
-
   render() {
-    const { loading } = this.state;
     const { from, channel, lastMessage } = this.props;
     return (
       <div>
-        <Card loading={loading} hoverable style={{ position: 'relative' }}>
+        <Card
+          hoverable
+          style={
+            this.props.conversationId.toString() === this.props.match.params.id
+              ? {
+                  position: 'relative',
+                  background: '#F2F2F2'
+                }
+              : { position: 'relative' }
+          }
+        >
           <Meta
             avatar={<Avatar icon="user" />}
             title={from}
@@ -39,4 +45,4 @@ class CardMessage extends Component {
     );
   }
 }
-export default CardMessage;
+export default withRouter(CardMessage);

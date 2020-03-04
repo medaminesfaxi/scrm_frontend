@@ -22,7 +22,10 @@ export default class ShowOnlineAgents extends Component {
       <div
         style={{
           maxHeight: '170px',
-          overflowY: 'auto'
+          overflowY: 'auto',
+          position: 'fixed',
+          bottom: '40px',
+          maxWidth: '20%'
         }}
       >
         <Title level={4}>

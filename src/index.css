@@ -82,7 +82,8 @@ img {
 }
 
 .ant-form {
-  width: 60% !important;
+  width: 100% !important;
+  max-width: 500px;
 }
 
 .ant-tabs-tab {
@@ -101,8 +102,8 @@ img {
 }
 
 .ant-tabs-content {
-  max-height: 445px;
-  min-height: 445px;
+  max-height: 460px;
+  min-height: 460px;
   overflow: auto;
 }
 

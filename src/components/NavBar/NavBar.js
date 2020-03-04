@@ -75,7 +75,7 @@ class NavBar extends Component {
                     <Icon type="user" style={{ fontSize: '28px' }} />
                   </NavLink>
                 </div>
-                <div>
+                {/* <div>
                   <div>
                     <NavLink
                       activeClassName="selected"
@@ -89,7 +89,7 @@ class NavBar extends Component {
                       />
                     </NavLink>
                   </div>
-                </div>
+                </div> */}
               </>
             ) : null}
           </section>

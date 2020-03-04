@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Tag, Input, Icon, Select } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
-
+import AddMacro from './AddMacro';
 const { Option } = Select;
 export default class Footer extends Component {
   state = {
@@ -17,7 +17,6 @@ export default class Footer extends Component {
   };
   handleClose = removedTag => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
-    console.log(tags);
     this.setState({ tags });
   };
 
@@ -35,7 +34,6 @@ export default class Footer extends Component {
     if (inputValue && tags.indexOf(inputValue) === -1) {
       tags = [...tags, inputValue];
     }
-    console.log(tags);
     this.setState({
       tags,
       inputVisible: false,
@@ -93,9 +91,7 @@ export default class Footer extends Component {
                 );
               })}
             </Select>
-            <Button type="primary" size="small">
-              Create a new macro
-            </Button>
+            <AddMacro />
           </>
         )}
         <span

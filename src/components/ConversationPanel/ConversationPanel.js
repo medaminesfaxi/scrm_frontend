@@ -11,8 +11,8 @@ const data = [
     from: 'Oussema',
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
-    tags: ['tag1'],
-    status: 'open'
+    tags: ['tag2'],
+    open: 'open'
   },
   {
     id: 1555,
@@ -21,7 +21,7 @@ const data = [
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    status: 'open'
+    open: 'open'
   },
   {
     id: 1369,
@@ -29,7 +29,7 @@ const data = [
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    status: 'open'
+    open: 'open'
   },
   {
     id: 1874,
@@ -37,7 +37,7 @@ const data = [
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    status: 'open'
+    open: 'open'
   },
   {
     id: 3698,
@@ -45,7 +45,7 @@ const data = [
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    status: 'open'
+    open: 'open'
   },
   {
     id: 2012,
@@ -53,15 +53,15 @@ const data = [
     channel: 'instagram',
     lastMessage: 'I need help! I was going to',
     tags: ['tag4'],
-    status: 'closed'
+    open: false
   },
   {
     id: 3874,
     from: 'Oussema',
     channel: 'instagram',
     lastMessage: 'I need help! I was going to',
-    tags: ['tag1', 'tag2'],
-    status: 'closed'
+    tags: ['tag1', 'tag3'],
+    open: false
   }
 ];
 const { TabPane } = Tabs;
@@ -71,25 +71,68 @@ class ConversationPanel extends Component {
     allConversations: data,
     closedConversations: [],
     loading: { assigned: false, all: false, closed: false },
-    checkedTags: []
+    checkedTags: [],
+    filteredData: []
   };
   componentDidMount() {
-    let closedConversations = data.filter(c => c.status === 'closed');
-    let assignedConversations = data.filter(c => c.assigned === 1);
+    let closedConversations = this.state.allConversations.filter(
+      c => c.open === false
+    );
+    let assignedConversations = this.state.allConversations.filter(
+      c => c.assigned === 1
+    );
     this.setState({ closedConversations, assignedConversations });
   }
-  handleSearchByInput = () => {
-    this.setState({ searchLoading: true });
-  };
 
   onChangeTags = checkedTags => {
     this.setState({ checkedTags });
   };
+  handleFilter = () => {
+    if (
+      this.state.checkedTags.length === 0 ||
+      this.state.allConversations.length === 0
+    ) {
+      this.setState({ filteredData: [] });
+      return;
+    }
+    const contains = arr1 => {
+      let arr2 = this.state.checkedTags;
+      for (let i = 0; i < arr1.length; i++) {
+        for (let j = 0; j < arr2.length; j++) {
+          if (arr1[i] === arr2[j]) return true;
+        }
+      }
+    };
+    let newData = this.state.allConversations.filter(conversation => {
+      return contains(conversation.tags);
+    });
+    let closedConversations = newData.filter(c => c.open === false);
+    let assignedConversations = newData.filter(c => c.assigned === 1);
+    this.setState({
+      filteredData: newData,
+      closedConversations,
+      assignedConversations
+    });
+  };
   clearFilter = () => {
-    this.setState({ checkedTags: [] });
-    this.setState({ data: this.state.prevData });
+    let closedConversations = this.state.allConversations.filter(
+      c => c.open === false
+    );
+    let assignedConversations = this.state.allConversations.filter(
+      c => c.assigned === 1
+    );
+    this.setState({
+      closedConversations,
+      assignedConversations,
+      checkedTags: [],
+      filteredData: []
+    });
   };
   render() {
+    let allConversations =
+      this.state.filteredData.length > 0
+        ? this.state.filteredData
+        : this.state.allConversations;
     return (
       <Card
         style={{
@@ -125,7 +168,7 @@ class ConversationPanel extends Component {
           </TabPane>
           <TabPane tab="All" key="2">
             <Skeleton loading={this.state.loading.all}>
-              {this.state.allConversations.map(conversation => (
+              {allConversations.map(conversation => (
                 <Link
                   to={`/conversations/${conversation.id}`}
                   key={conversation.id}

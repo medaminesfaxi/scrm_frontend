@@ -1,47 +1,17 @@
-import React, { useState } from 'react';
-import { Icon } from 'antd';
+import React from 'react';
+import { Icon, Button } from 'antd';
 import TextareaAutosize from 'react-textarea-autosize';
 
 export default function InputBox(props) {
-  const [inputText, setInputText] = useState('');
-
-  const handleOnChange = e => {
-    setInputText(e.target.value);
-  };
-
-  const strip = str => {
-    return str.replace(/^\s+|\s+$/g, '');
-  };
-
-  const handleOnClick = e => {
-    let str = strip(inputText);
-    if (str.length) {
-      sendMessage(str);
-    } else {
-      // to do cannot send empty message
-    }
-  };
-
-  const onKeyPress = e => {
-    if (e.shiftKey && e.charCode === 13) {
-      let str = strip(inputText);
-      if (str.length) {
-        sendMessage(str);
-      }
-      e.preventDefault();
-      return false;
-    }
-  };
-
-  const sendMessage = message => {
-    props.onSendMessage(message);
-    setInputText('');
-  };
-
+  const closeConversation = () => {};
   return (
-    <div className={`react-chat-inputBox ${props.disabled ? 'disabled' : ''}`}>
+    <div
+      className={`react-chat-inputBox ${props.disabled ? 'disabled' : ''}`}
+      style={{ border: props.border }}
+    >
       <TextareaAutosize
         maxRows={3}
+        inputRef={props.setRef}
         className="react-chat-textarea"
         placeholder={
           props.disabled
@@ -50,19 +20,21 @@ export default function InputBox(props) {
             ? props.placeholder
             : 'Press shift + enter to send'
         }
-        value={inputText}
-        onChange={handleOnChange}
-        onKeyPress={onKeyPress}
+        value={props.inputText}
+        onChange={props.handleOnChange}
+        onKeyPress={props.onKeyPress}
         autoFocus
         disabled={props.disabled}
       />
-      <button
-        className="react-chat-sendButton"
-        onClick={handleOnClick}
-        disabled={props.disabled}
-      >
-        <Icon type="aliwangwang" className="react-chat-sendButton" />
-      </button>
+      {!props.disabled ? (
+        <button className="react-chat-sendButton" onClick={props.handleOnClick}>
+          <Icon type="aliwangwang" className="react-chat-sendButton" />
+        </button>
+      ) : (
+        <Button type="primary" onClick={closeConversation}>
+          Resume cnversation
+        </Button>
+      )}
     </div>
   );
 }

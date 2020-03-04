@@ -11,18 +11,17 @@ export default function MessageBox(props) {
     text
   } = props;
 
-  if (type === 'text' || type === 'indicator') {
-    let time;
-    if (timestamp) {
-      if (timestampFormat === 'calendar') {
-        time = moment(timestamp).calendar();
-      } else if (timestampFormat === 'fromNow') {
-        time = moment(timestamp).fromNow();
-      } else {
-        time = moment(timestamp).format(timestampFormat);
-      }
+  let time;
+  if (timestamp) {
+    if (timestampFormat === 'calendar') {
+      time = moment(timestamp).calendar();
+    } else if (timestampFormat === 'fromNow') {
+      time = moment(timestamp).fromNow();
+    } else {
+      time = moment(timestamp).format(timestampFormat);
     }
-
+  }
+  if (type === 'text' || type === 'indicator') {
     return (
       <div
         className={`react-chat-messageBox ${
@@ -58,6 +57,11 @@ export default function MessageBox(props) {
       </div>
     );
   } else if (type === 'note') {
-    return <div className="react-chat-note">{text}</div>;
+    return (
+      <div className="react-chat-note react-chat-messageBoxRight">
+        {text}{' '}
+        <div className="react-chat-additional">{time !== null && time}</div>
+      </div>
+    );
   }
 }

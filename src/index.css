@@ -1,9 +1,18 @@
+html, body, #root {
+  height: 100%;
+  background-color: #fff;
+}
+
 body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #fff;
 }
 
 h1 {
@@ -36,19 +45,18 @@ img {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #555;
+  background-color: #C0C0C0;
 }
 
 /* customizing antd */
 
 .ant-tabs-content {
-  height: 57vh;
   padding-right: 8px;
   overflow: auto;
 }
 
 .ant-form-explain {
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .ant-btn[disabled] {
@@ -74,11 +82,11 @@ img {
 }
 
 .ant-form {
-  width: 320px !important;
+  width: 60% !important;
 }
 
 .ant-tabs-tab {
-  width: 109px;
+  width: 40%;
   text-align: center;
 }
 
@@ -88,5 +96,32 @@ img {
 }
 
 .ant-tabs-tabpane-active .ant-card-hoverable:hover {
-  background: #f3f6fa !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.12);
+  margin: 4px 0;
+}
+
+.ant-tabs-content {
+  max-height: 445px;
+  min-height: 445px;
+  overflow: auto;
+}
+
+.ant-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 !important
+}
+
+.react-chat-inputBox+textarea:focus {
+  border: 1px solid rgb(13, 140, 255) !important;
+  background: red;
+}
+
+.ant-divider-horizontal {
+  margin: 12px 0 !important;
 }

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Tooltip, Checkbox, Divider, Input } from 'antd';
+import { Button, Tooltip, Checkbox, Divider } from 'antd';
 
 const CheckboxGroup = Checkbox.Group;
-const { Search } = Input;
-class SearchFilter extends Component {
+class Filter extends Component {
   state = {
     filterVisible: false,
     searchLoading: false
@@ -11,18 +10,10 @@ class SearchFilter extends Component {
   toggleFilters = () => {
     this.setState({ filterVisible: !this.state.filterVisible });
   };
-  handleSearchByInput = () => {};
   render() {
     return (
       <>
-        <div style={{ display: 'flex' }}>
-          <Search
-            style={{ margin: '0px 8px' }}
-            onSearch={this.props.handleSearchByInput}
-            placeholder="search..."
-            loading={this.props.searchLoading}
-            enterButton
-          />
+        <div style={{ display: 'flex', marginBottom: '24px' }}>
           <Tooltip placement="top" title={'Filter'}>
             <Button icon="filter" type="primary" onClick={this.toggleFilters} />
           </Tooltip>
@@ -48,4 +39,4 @@ class SearchFilter extends Component {
     );
   }
 }
-export default SearchFilter;
+export default Filter;

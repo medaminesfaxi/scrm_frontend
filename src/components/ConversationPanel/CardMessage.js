@@ -19,7 +19,8 @@ class CardMessage extends Component {
             this.props.conversationId.toString() === this.props.match.params.id
               ? {
                   position: 'relative',
-                  background: '#F2F2F2'
+                  background: '#D8ECFF',
+                  border: '2px solid rgb(13, 140, 255)'
                 }
               : { position: 'relative' }
           }

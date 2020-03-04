@@ -75,6 +75,21 @@ class NavBar extends Component {
                     <Icon type="user" style={{ fontSize: '28px' }} />
                   </NavLink>
                 </div>
+                <div>
+                  <div>
+                    <NavLink
+                      activeClassName="selected"
+                      to="/config"
+                      style={{ textAlign: 'center' }}
+                    >
+                      <Icon
+                        type="setting"
+                        theme="twoTone"
+                        style={{ fontSize: '28px' }}
+                      />
+                    </NavLink>
+                  </div>
+                </div>
               </>
             ) : null}
           </section>
@@ -93,9 +108,12 @@ class NavBar extends Component {
               </Badge>
               <span>{username}</span>
               <Icon
-                type="down-circle"
-                theme="twoTone"
-                style={{ fontSize: '28px' }}
+                type="down"
+                style={{
+                  fontSize: '22px',
+                  position: 'relative',
+                  left: '-14px'
+                }}
               />
             </div>
           </Dropdown>

@@ -21,18 +21,17 @@ export default class Header extends Component {
         <Select
           style={{ width: 200 }}
           placeholder="Assign to"
-          optionFilterProp="children"
           onChange={this.onChangeAssignSelection}
         >
           <Option value="mohamed">Mohamed</Option>
           <Option value="jawher">Jawher</Option>
           <Option value="moncef">Moncef</Option>
-        </Select>{' '}
-        {'    '}
+        </Select>
+        <span style={{ margin: '0 16px' }}>Status:</span>
         <Select
+          defaultValue={this.props.open ? 'open' : 'closed'}
           style={{ width: 200 }}
           placeholder="Status"
-          optionFilterProp="children"
           onChange={this.onChangeStatusSelection}
         >
           <Option value="open">Open</Option>

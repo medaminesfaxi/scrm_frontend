@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Select, Divider, Button, Tag, Input, Icon } from 'antd';
+import { Button, Tag, Input, Icon, Select } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
 
+const { Option } = Select;
 export default class Footer extends Component {
   state = {
     tags: this.props.tags,
@@ -72,49 +73,84 @@ export default class Footer extends Component {
           background: '#fff'
         }}
       >
-        <Button icon="book">Add note</Button>
-        {'    '}
-        <div>
-          <div style={{ marginBottom: 16 }}>
-            <TweenOneGroup
-              enter={{
-                scale: 0.8,
-                opacity: 0,
-                type: 'from',
-                duration: 100,
-                onComplete: e => {
-                  e.target.style = '';
-                }
-              }}
-              leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
-              appear={false}
-            >
-              {tagChild}
-            </TweenOneGroup>
-          </div>
-          {inputVisible && (
-            <Input
-              ref={this.saveInputRef}
-              type="text"
+        {this.props.disabled && (
+          <>
+            <Button icon="book" size="small" onClick={this.props.addNote}>
+              Add note
+            </Button>
+            <Select
+              value={this.props.selectedMacro}
               size="small"
-              style={{ width: 78 }}
-              value={inputValue}
-              onChange={this.handleInputChange}
-              onBlur={this.handleInputConfirm}
-              onPressEnter={this.handleInputConfirm}
-            />
-          )}
-          {!inputVisible && (
-            <Tag
-              onClick={this.showInput}
-              style={{ background: '#fff', borderStyle: 'dashed' }}
+              placeholder="Use macros"
+              style={{ width: 120, marginLeft: '36px' }}
+              onSelect={this.props.useMacro}
             >
-              <Icon type="plus" /> New Tag
-            </Tag>
-          )}
+              {Object.keys(this.props.macros).map(key => {
+                return (
+                  <Option key={key} value={key}>
+                    {key}
+                  </Option>
+                );
+              })}
+            </Select>
+            <Button type="primary" size="small">
+              Create a new macro
+            </Button>
+          </>
+        )}
+        <span
+          style={{
+            margin: '0 8px 0 36px',
+            background: '#1DC36B',
+            color: '#fff',
+            padding: '2px 8px',
+            fontSize: '12px',
+            borderRadius: '4px'
+          }}
+        >
+          Tags
+        </span>
+        <div style={{ display: 'inline-block' }}>
+          <TweenOneGroup
+            enter={{
+              scale: 0.8,
+              opacity: 0,
+              type: 'from',
+              duration: 100,
+              onComplete: e => {
+                e.target.style = '';
+              }
+            }}
+            leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
+            appear={false}
+          >
+            {tagChild}
+          </TweenOneGroup>
         </div>
-        ,
-        <Divider />
+        {inputVisible && (
+          <Input
+            ref={this.saveInputRef}
+            type="text"
+            size="small"
+            style={{ width: 78 }}
+            value={inputValue}
+            onChange={this.handleInputChange}
+            onBlur={this.handleInputConfirm}
+            onPressEnter={this.handleInputConfirm}
+          />
+        )}
+        {!inputVisible && (
+          <Tag
+            onClick={this.showInput}
+            style={{
+              background: '#fff',
+              borderStyle: 'dashed',
+              cursor: 'pointer'
+            }}
+          >
+            <Icon type="plus" /> New Tag
+          </Tag>
+        )}
       </div>
     );
   }

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Tag, Input, Icon, Select } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
-import AddMacro from './AddMacro';
+import AddMacro from '../AddMacro';
+
 const { Option } = Select;
 export default class Footer extends Component {
   state = {

@@ -50,8 +50,44 @@ class NavBar extends Component {
                 </Badge>
               </NavLink>
             </div>
+            <div>
+              <div>
+                <NavLink
+                  activeClassName="selected"
+                  to="/macros"
+                  style={{ textAlign: 'center' }}
+                >
+                  <Icon
+                    type="container"
+                    theme="twoTone"
+                    style={{ fontSize: '28px' }}
+                  />
+                  <div
+                    style={{
+                      height: '0px',
+                      margin: 0,
+                      padding: 0,
+                      position: 'relative',
+                      top: '-15px'
+                    }}
+                  >
+                    {' '}
+                    Macros
+                  </div>
+                </NavLink>
+              </div>
+            </div>
             {is_admin ? (
               <>
+                <div>
+                  <NavLink
+                    activeClassName="selected"
+                    to="/users"
+                    style={{ textAlign: 'center' }}
+                  >
+                    <Icon type="user" style={{ fontSize: '28px' }} />
+                  </NavLink>
+                </div>
                 <div>
                   <NavLink
                     exact={true}
@@ -66,30 +102,6 @@ class NavBar extends Component {
                     />
                   </NavLink>
                 </div>
-                <div>
-                  <NavLink
-                    activeClassName="selected"
-                    to="/users"
-                    style={{ textAlign: 'center' }}
-                  >
-                    <Icon type="user" style={{ fontSize: '28px' }} />
-                  </NavLink>
-                </div>
-                {/* <div>
-                  <div>
-                    <NavLink
-                      activeClassName="selected"
-                      to="/config"
-                      style={{ textAlign: 'center' }}
-                    >
-                      <Icon
-                        type="setting"
-                        theme="twoTone"
-                        style={{ fontSize: '28px' }}
-                      />
-                    </NavLink>
-                  </div>
-                </div> */}
               </>
             ) : null}
           </section>

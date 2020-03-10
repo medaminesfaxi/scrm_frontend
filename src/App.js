@@ -10,7 +10,7 @@ import Settings from './pages/Settings';
 import Users from './pages/Users';
 import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
-import Config from './pages/Config';
+import Macros from './pages/Macros';
 class App extends Component {
   render() {
     return (
@@ -24,13 +24,13 @@ class App extends Component {
             <PrivateRoute path="/conversations" component={Conversations} />
             <PrivateRoute path="/account" component={Account} />
             <PrivateRoute path="/settings" component={Settings} />
+            <PrivateRoute path="/macros" component={Macros} />
             <PrivateRoute
               path="/dashboard"
               roles="ADMIN"
               component={Dashboard}
             />
             <PrivateRoute path="/Users" roles="ADMIN" component={Users} />
-            <PrivateRoute path="/Config" roles="ADMIN" component={Config} />
             <Route component={NotFound} />
           </Switch>
         </Router>

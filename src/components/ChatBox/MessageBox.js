@@ -59,7 +59,7 @@ export default function MessageBox(props) {
   } else if (type === 'note') {
     return (
       <div className="react-chat-note react-chat-messageBoxRight">
-        {text}{' '}
+        {text}
         <div className="react-chat-additional">{time !== null && time}</div>
       </div>
     );

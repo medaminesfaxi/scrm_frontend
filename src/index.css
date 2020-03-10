@@ -118,11 +118,6 @@ img {
   flex: 1 !important
 }
 
-.react-chat-inputBox+textarea:focus {
-  border: 1px solid rgb(13, 140, 255) !important;
-  background: red;
-}
-
 .ant-divider-horizontal {
   margin: 12px 0 !important;
 }

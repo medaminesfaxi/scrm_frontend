@@ -2,87 +2,59 @@ import React from 'react';
 import { Card } from 'antd';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
-import './ChatBox.css';
 import Header from './Header';
 import Footer from './Footer';
+import { authService } from '../../services/authService';
+import './ChatBox.css';
 
 class ChatBox extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.scrollToBottom = this.scrollToBottom.bind(this);
-    this.handleOnSendMessage = this.handleOnSendMessage.bind(this);
-  }
-
   state = {
+    note: false,
+
     inputText: '',
-    open: true,
+
     macros: {
       greeting: 'Hello and welcome wow omg nice you are here!',
       bye: 'omg no ... see you next time bye!',
       thank: 'thank you so much'
     },
-    messages: [
-      {
-        text:
-          'This is a note yey yey eyyeyeyeyeyeyeyeyeyeyyeyeyeyeyeyeyeyeyyeyeyeyeyeyeyeyeye',
-        timestamp: 1578366389250,
-        type: 'note'
-      },
-      {
-        author: {
-          username: 'user1',
-          id: 1,
-          avatarUrl:
-            'https://scontent.ftun11-1.fna.fbcdn.net/v/t1.0-9/56196777_2370263756337563_5897750826310434816_n.jpg?_nc_cat=105&_nc_sid=85a577&_nc_ohc=l-JoEUse1d4AX-GM_Gm&_nc_ht=scontent.ftun11-1.fna&oh=828cc2709b0c837cd67159c0f60467f0&oe=5EF36B5E'
-        },
-        text: 'Hi',
-        type: 'text',
-        timestamp: 1578366393250
-      },
-      {
-        author: {
-          username: 'user1',
-          id: 1,
-          avatarUrl:
-            'https://scontent.ftun11-1.fna.fbcdn.net/v/t1.0-9/56196777_2370263756337563_5897750826310434816_n.jpg?_nc_cat=105&_nc_sid=85a577&_nc_ohc=l-JoEUse1d4AX-GM_Gm&_nc_ht=scontent.ftun11-1.fna&oh=828cc2709b0c837cd67159c0f60467f0&oe=5EF36B5E'
-        },
-        text: "What's up?",
-        type: 'text',
-        timestamp: 1578366425250
-      }
-    ],
+
+    conversation: {
+      assignedTo: 999,
+      messages: []
+    },
     dataLoading: false,
     border: ''
   };
 
   handleOnSendMessage = message => {
-    let t = message.substr(0, 5).toLowerCase() === '!note' ? 'note' : 'text';
-    let m = t === 'note' ? message.substring(6, message.length) : message;
-    if (m.length > 0)
+    if (message.length > 0 && !this.state.note) {
+      const currentUser = authService.getCurrentUser();
       this.setState({
-        messages: this.state.messages.concat({
-          author: {
-            username: 'user1',
-            id: 1,
-            avatarUrl:
-              'https://scontent.ftun11-1.fna.fbcdn.net/v/t1.0-9/56196777_2370263756337563_5897750826310434816_n.jpg?_nc_cat=105&_nc_sid=85a577&_nc_ohc=l-JoEUse1d4AX-GM_Gm&_nc_ht=scontent.ftun11-1.fna&oh=828cc2709b0c837cd67159c0f60467f0&oe=5EF36B5E'
-          },
-          text: m,
-          timestamp: +new Date(),
-          type: t
-        }),
+        conversation: {
+          ...this.state.conversation,
+          messages: this.state.conversation.messages.concat({
+            author: {
+              username: currentUser.username,
+              id: currentUser.id,
+              avatarUrl: currentUser.avatarSrc
+            },
+            text: message,
+            timestamp: +new Date(),
+            type: 'text'
+          })
+        },
         inputText: '',
         border: '2px solid #ccc'
       });
+    }
+    if (this.state.note) {
+      this.props.AddNewNote(message);
+      this.setState({ inputText: '', border: '2px solid #ccc', note: false });
+    }
   };
 
   handleOnChange = e => {
-    if (e.target.value.substr(0, 5).toLowerCase() === '!note') {
-      this.setState({ border: '2px solid #FFA800' });
-    } else {
-      this.setState({ border: '2px solid #ccc' });
-    }
     this.setState({ inputText: e.target.value });
   };
 
@@ -108,12 +80,12 @@ class ChatBox extends React.Component {
     }
   };
 
-  scrollToBottom() {
+  scrollToBottom = () => {
     if (this.messagesList) {
       this.messagesList.scrollTop =
         this.messagesList.scrollHeight - this.messagesList.clientHeight;
     }
-  }
+  };
   componentDidMount() {
     this.scrollToBottom();
   }
@@ -122,7 +94,7 @@ class ChatBox extends React.Component {
     this.scrollToBottom();
   }
   addNote = () => {
-    this.setState({ inputText: '!note ', border: '2px solid #FFA800' });
+    this.setState({ note: true, border: '2px solid #FFA800' });
     this.childRef.focus();
   };
   useMacro = value => {
@@ -132,10 +104,21 @@ class ChatBox extends React.Component {
     this.childRef = input;
   };
 
+  takeoverChat = () => {
+    this.setState({
+      conversation: { ...this.state.conversation, assignedTo: 1 }
+    });
+  };
+
   render() {
+    const taken =
+      this.state.conversation.assignedTo !== 1 &&
+      this.state.conversation.assignedTo !== 999;
+    const isBot = this.state.conversation.assignedTo === 999;
+
     const { placeholder } = this.props;
     const userId = 1;
-    const { messages } = this.state;
+    const { messages } = this.state.conversation;
 
     const messageList = messages.map((message, idx) => {
       return (
@@ -153,7 +136,7 @@ class ChatBox extends React.Component {
         style={{ marginTop: 4, padding: 0, flex: '29%' }}
         loading={this.state.dataLoading}
       >
-        <Header open={this.state.open} />
+        <Header taken={isBot} takeoverChat={this.takeoverChat} />
         <div className="react-chat-container">
           <div className="react-chat-row">
             <div className="react-chat-viewerBox">
@@ -165,25 +148,28 @@ class ChatBox extends React.Component {
                   {messageList}
                 </div>
               </div>
-              <Footer
-                selectedMacro={this.selectedMacro}
-                macros={this.state.macros}
-                useMacro={this.useMacro}
-                tags={this.props.tags}
-                addNote={this.addNote}
-                disabled={this.state.open}
-              />
-              <InputBox
-                border={this.state.border}
-                setRef={this.setRef}
-                inputText={this.state.inputText}
-                handleOnClick={this.handleOnClick}
-                onKeyPress={this.onKeyPress}
-                handleOnChange={this.handleOnChange}
-                disabled={!this.state.open}
-                placeholder={placeholder}
-                disabledInputPlaceholder={!this.state.open}
-              />
+              {isBot ? null : (
+                <>
+                  <Footer
+                    selectedMacro={this.selectedMacro}
+                    macros={this.state.macros}
+                    useMacro={this.useMacro}
+                    tags={this.props.tags}
+                    addNote={this.addNote}
+                    disabled={!taken}
+                  />
+                  <InputBox
+                    border={this.state.border}
+                    setRef={this.setRef}
+                    inputText={this.state.inputText}
+                    handleOnClick={this.handleOnClick}
+                    onKeyPress={this.onKeyPress}
+                    handleOnChange={this.handleOnChange}
+                    taken={taken}
+                    placeholder={placeholder}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>

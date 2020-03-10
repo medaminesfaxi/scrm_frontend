@@ -13,7 +13,7 @@ class CustomerDetails extends React.Component {
     const { loading } = this.state;
     return (
       <Card
-        style={{ marginTop: '4px', flex: '1' }}
+        style={{ height: '50%' }}
         loading={loading}
         cover={
           <>

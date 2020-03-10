@@ -12,44 +12,48 @@ const data = [
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag2'],
-    open: 'open'
+    open: true
   },
   {
     id: 1555,
-    assigned: 1,
+    assigned: 2,
     from: 'Oussema',
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    open: 'open'
+    open: true
   },
   {
     id: 1369,
     from: 'Oussema',
+    assigned: 2,
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    open: 'open'
+    open: true
   },
   {
     id: 1874,
     from: 'Oussema',
+    assigned: 3,
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    open: 'open'
+    open: true
   },
   {
     id: 3698,
     from: 'Oussema',
+    assigned: 1,
     channel: 'facebook',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1'],
-    open: 'open'
+    open: true
   },
   {
     id: 2012,
     from: 'Oussema',
+    assigned: 1,
     channel: 'instagram',
     lastMessage: 'I need help! I was going to',
     tags: ['tag4'],
@@ -58,6 +62,7 @@ const data = [
   {
     id: 3874,
     from: 'Oussema',
+    assigned: 1,
     channel: 'instagram',
     lastMessage: 'I need help! I was going to',
     tags: ['tag1', 'tag3'],
@@ -157,6 +162,7 @@ class ConversationPanel extends Component {
                   key={conversation.id}
                 >
                   <CardMessage
+                    assignedTo={conversation.assigned}
                     conversationId={conversation.id}
                     lastMessage={conversation.lastMessage}
                     channel={conversation.channel}
@@ -174,6 +180,7 @@ class ConversationPanel extends Component {
                   key={conversation.id}
                 >
                   <CardMessage
+                    assignedTo={conversation.assigned}
                     conversationId={conversation.id}
                     lastMessage={conversation.lastMessage}
                     channel={conversation.channel}
@@ -191,6 +198,7 @@ class ConversationPanel extends Component {
                   key={conversation.id}
                 >
                   <CardMessage
+                    assignedTo={conversation.assigned}
                     conversationId={conversation.id}
                     lastMessage={conversation.lastMessage}
                     channel={conversation.channel}

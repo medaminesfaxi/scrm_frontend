@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Avatar, Icon } from 'antd';
+import { Card, Avatar, Icon, Tag } from 'antd';
 import { formatText } from '../../shared/utils';
 import { withRouter } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ const colors = {
 const { Meta } = Card;
 class CardMessage extends Component {
   render() {
-    const { from, channel, lastMessage } = this.props;
+    const { from, channel, lastMessage, assignedTo } = this.props;
     return (
       <div>
         <Card
@@ -41,6 +41,19 @@ class CardMessage extends Component {
               fontSize: '22px'
             }}
           />
+          {assignedTo !== 1 && (
+            <Tag
+              color="red"
+              style={{
+                position: 'absolute',
+                right: '152px',
+                top: '22px',
+                fontSize: '14px'
+              }}
+            >
+              Live
+            </Tag>
+          )}
         </Card>
       </div>
     );

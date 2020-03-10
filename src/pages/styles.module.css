@@ -97,3 +97,28 @@ article p {
 .btn {
   width: 100%;
 }
+
+.note {
+  background: #FFE7A9;
+  position: relative;
+  padding: 36px 28px;
+  margin: 6px;
+  border-radius: 6px;
+  transition: 0.2s ease-out;
+}
+
+.note:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.12);
+}
+
+.note:hover .delete__note {
+  display: inline-block;
+}
+
+.delete__note {
+  display: none;
+  font-size: 18px;
+  position: absolute;
+  right: 18px;
+  top: 40%
+}

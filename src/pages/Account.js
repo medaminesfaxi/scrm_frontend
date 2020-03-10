@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { validImage } from '../shared/utils';
 import { Button, Avatar, Form, Icon, Input } from 'antd';
 import styles from './styles.module.css';
+
 let upload = React.createRef();
+
 class AccountForm extends Component {
   state = {
     loading: false

@@ -7,10 +7,11 @@ import Notes from '../components/Notes';
 export default class Conversations extends Component {
   state = {
     notes: [
-      { id: 1, text: 'this is a note number 1', timestamp: '1578366389250' },
-      { id: 2, text: 'this is a note number 2', timestamp: '1578366389258' }
+      { id: 1, text: 'this is a note number 1' },
+      { id: 2, text: 'this is a note number 2' }
     ],
-    tags: ['tag1', 'tag2', 'tag3']
+    tags: ['tag1', 'tag2', 'tag3'],
+    channels: ['instagram', 'facebook']
   };
   AddNewNote = message => {
     let note = { id: 6, text: message };
@@ -23,7 +24,10 @@ export default class Conversations extends Component {
   render() {
     return (
       <main>
-        <ConversationPanel tags={this.state.tags} />
+        <ConversationPanel
+          tags={this.state.tags}
+          channels={this.state.channels}
+        />
         {this.props.match.params.id ? (
           <>
             <ChatBox

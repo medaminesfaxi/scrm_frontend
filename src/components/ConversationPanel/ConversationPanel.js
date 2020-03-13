@@ -4,98 +4,29 @@ import CardMessage from './CardMessage';
 import Filter from './Filter';
 import ShowOnlineAgents from './ShowOnlineAgents';
 import { Link } from 'react-router-dom';
-const data = [
-  {
-    id: 1234,
-    assigned: 1,
-    from: 'Oussema',
-    channel: 'facebook',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag2'],
-    open: true
-  },
-  {
-    id: 1555,
-    assigned: 2,
-    from: 'Oussema',
-    channel: 'facebook',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag1'],
-    open: true
-  },
-  {
-    id: 1369,
-    from: 'Oussema',
-    assigned: 2,
-    channel: 'facebook',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag1'],
-    open: true
-  },
-  {
-    id: 1874,
-    from: 'Oussema',
-    assigned: 3,
-    channel: 'facebook',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag1'],
-    open: true
-  },
-  {
-    id: 3698,
-    from: 'Oussema',
-    assigned: 1,
-    channel: 'facebook',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag1'],
-    open: true
-  },
-  {
-    id: 2012,
-    from: 'Oussema',
-    assigned: 1,
-    channel: 'instagram',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag4'],
-    open: false
-  },
-  {
-    id: 3874,
-    from: 'Oussema',
-    assigned: 1,
-    channel: 'instagram',
-    lastMessage: 'I need help! I was going to',
-    tags: ['tag1', 'tag3'],
-    open: false
-  }
-];
+import { assigned, handoff, bot } from './fakeConversations';
+
 const { TabPane } = Tabs;
 class ConversationPanel extends Component {
   state = {
-    assignedConversations: [],
-    allConversations: data,
-    closedConversations: [],
-    loading: { assigned: false, all: false, closed: false },
+    conversations: [],
+    loading: { assigned: false, handoff: false, bot: false },
     checkedTags: [],
-    filteredData: []
+    filteredData: [],
+    searchLoading: false,
+    search: '',
+    activeTab: '1'
   };
   componentDidMount() {
-    let closedConversations = this.state.allConversations.filter(
-      c => c.open === false
-    );
-    let assignedConversations = this.state.allConversations.filter(
-      c => c.assigned === 1
-    );
-    this.setState({ closedConversations, assignedConversations });
+    this.setState({ conversations: assigned });
   }
-
   onChangeTags = checkedTags => {
     this.setState({ checkedTags });
   };
   handleFilter = () => {
     if (
       this.state.checkedTags.length === 0 ||
-      this.state.allConversations.length === 0
+      this.state.conversations.length === 0
     ) {
       this.setState({ filteredData: [] });
       return;
@@ -108,36 +39,50 @@ class ConversationPanel extends Component {
         }
       }
     };
-    let newData = this.state.allConversations.filter(conversation => {
-      return contains(conversation.tags);
+    let newData = this.state.conversations.filter(conversation => {
+      return contains([...conversation.tags, conversation.channel]);
     });
-    let closedConversations = newData.filter(c => c.open === false);
-    let assignedConversations = newData.filter(c => c.assigned === 1);
     this.setState({
-      filteredData: newData,
-      closedConversations,
-      assignedConversations
+      filteredData: newData
     });
   };
   clearFilter = () => {
-    let closedConversations = this.state.allConversations.filter(
-      c => c.open === false
-    );
-    let assignedConversations = this.state.allConversations.filter(
-      c => c.assigned === 1
-    );
     this.setState({
-      closedConversations,
-      assignedConversations,
       checkedTags: [],
       filteredData: []
     });
   };
+  fetchData = activeKey => {
+    this.setState({ search: '' });
+    switch (activeKey) {
+      case '1':
+        this.setState({ conversations: assigned, activeTab: '1' });
+        break;
+      case '2':
+        this.setState({ conversations: handoff, activeTab: '2' });
+        break;
+      case '3':
+        this.setState({ conversations: bot, activeTab: '3' });
+        break;
+      default:
+        break;
+    }
+  };
+  handleSearchInputChange = event => {
+    this.setState({ search: event.target.value });
+  };
+  handleSearchByInput = value => {
+    if (!value) {
+      this.setState({ searchLoading: false, activeTab: '1' });
+      return;
+    }
+    this.setState({ searchLoading: false, activeTab: '0' });
+  };
   render() {
-    let allConversations =
+    let conversations =
       this.state.filteredData.length > 0
         ? this.state.filteredData
-        : this.state.allConversations;
+        : this.state.conversations;
     return (
       <Card
         style={{
@@ -146,17 +91,25 @@ class ConversationPanel extends Component {
         }}
       >
         <Filter
+          search={this.state.search}
+          searchLoading={this.state.searchLoading}
+          handleSearchByInput={this.handleSearchByInput}
+          handleSearchInputChange={this.handleSearchInputChange}
           handleFilter={this.handleFilter}
           clearFilter={this.clearFilter}
           checkedTags={this.state.checkedTags}
           onChangeTags={this.onChangeTags}
-          tags={this.props.tags}
+          tags={[...this.props.tags, ...this.props.channels]}
         />
 
-        <Tabs type="card">
+        <Tabs
+          type="card"
+          onChange={this.fetchData}
+          activeKey={this.state.activeTab}
+        >
           <TabPane tab="Assigned" key="1">
             <Skeleton loading={this.state.loading.assigned}>
-              {this.state.assignedConversations.map(conversation => (
+              {conversations.map(conversation => (
                 <Link
                   to={`/conversations/${conversation.id}`}
                   key={conversation.id}
@@ -172,9 +125,9 @@ class ConversationPanel extends Component {
               ))}
             </Skeleton>
           </TabPane>
-          <TabPane tab="All" key="2">
-            <Skeleton loading={this.state.loading.all}>
-              {allConversations.map(conversation => (
+          <TabPane tab="Handoff" key="2">
+            <Skeleton loading={this.state.loading.handoff}>
+              {conversations.map(conversation => (
                 <Link
                   to={`/conversations/${conversation.id}`}
                   key={conversation.id}
@@ -190,9 +143,9 @@ class ConversationPanel extends Component {
               ))}
             </Skeleton>
           </TabPane>
-          <TabPane tab="Closed" key="3">
-            <Skeleton loading={this.state.loading.closed}>
-              {this.state.closedConversations.map(conversation => (
+          <TabPane tab="BOT" key="3">
+            <Skeleton loading={this.state.loading.bot}>
+              {conversations.map(conversation => (
                 <Link
                   to={`/conversations/${conversation.id}`}
                   key={conversation.id}
@@ -209,6 +162,39 @@ class ConversationPanel extends Component {
             </Skeleton>
           </TabPane>
         </Tabs>
+        {this.state.activeTab === '0' && (
+          <div
+            style={{
+              position: 'relative',
+              maxHeight: '460px',
+              top: '-460px'
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                width: '98%'
+              }}
+            >
+              <Skeleton loading={this.state.loading.assigned}>
+                {conversations.map(conversation => (
+                  <Link
+                    to={`/conversations/${conversation.id}`}
+                    key={conversation.id}
+                  >
+                    <CardMessage
+                      assignedTo={conversation.assigned}
+                      conversationId={conversation.id}
+                      lastMessage={conversation.lastMessage}
+                      channel={conversation.channel}
+                      from={conversation.from}
+                    />
+                  </Link>
+                ))}
+              </Skeleton>
+            </div>
+          </div>
+        )}
         <Divider />
         <ShowOnlineAgents />
       </Card>

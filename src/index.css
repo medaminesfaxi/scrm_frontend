@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   background-color: #fff;
 }
@@ -45,7 +47,7 @@ img {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #C0C0C0;
+  background-color: #c0c0c0;
 }
 
 /* customizing antd */
@@ -115,9 +117,109 @@ img {
 .ant-card-body {
   display: flex;
   flex-direction: column;
-  flex: 1 !important
+  flex: 1 !important;
 }
 
 .ant-divider-horizontal {
   margin: 12px 0 !important;
+}
+
+.chart__container {
+  padding: 36px;
+  border-radius: 6px;
+  background-color: #172b4d !important;
+}
+
+.chart {
+  background-color: #172b4d !important;
+  position: relative;
+  height: 350px;
+}
+
+.chart-sm {
+  height: 230px;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #8898aa;
+}
+
+.chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.chart-legend-item + .chart-legend-item {
+  margin-left: 1rem;
+}
+
+.chart-legend-indicator {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.375rem;
+  border-radius: 50%;
+}
+
+#chart-tooltip {
+  z-index: 0;
+}
+
+#chart-tooltip .arrow {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateX(-0.5rem);
+}
+
+.chart-info-overlay {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  max-width: 350px;
+  padding: 20px;
+  z-index: 1;
+}
+.stats {
+  box-shadow: 0 0 4px #6782ee;
+  position: relative;
+  padding: 16px;
+  top: -80px;
+  background: #fff;
+  width: 80%;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+.stat__card {
+  cursor: pointer;
+  display: inline-block;
+  width: 25%;
+  padding: 3%;
+  margin: 26px 0 46px 0;
+}
+.stat__card h2 {
+  color: #444;
+  font-weight: 700;
+}
+.stat__card h3 {
+  color: rgb(87, 86, 86);
+}
+.stats .active h3 {
+  color: #5553b7;
+}
+.stats .active h2 {
+  color: #5553b7;
+}
+.stats .active {
+  background: #fbfbfb;
+  border-top: 3px solid #5553b7;
+}
+.stat__card span {
+  font-size: 16px;
+  color: #777;
 }

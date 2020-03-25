@@ -110,7 +110,7 @@ export default class Users extends Component {
               <Divider type="vertical"></Divider>
               <EditUserDrawer
                 user_id={record.key}
-                username={record.user}
+                fullname={record.user}
                 loading={this.state.buttonLoading}
               />
             </>

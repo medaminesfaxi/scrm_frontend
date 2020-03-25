@@ -2,27 +2,27 @@ import React from 'react';
 import { Form, Icon, Input, Button } from 'antd';
 import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
-import { emailPattern, notification } from './../shared/utils';
+import { emailPattern } from './../shared/utils';
 import { authService } from './../services/authService';
+
 class LoginForm extends React.Component {
   state = {
     loading: false
   };
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        this.setState({ loading: true });
-        try {
-          authService.login(values.email, values.password);
-          this.setState({ loading: false });
-          notification('success', 'Connected!');
-        } catch (e) {
-          this.setState({ loading: false });
-        }
+        authService.login(
+          values.email,
+          values.password,
+          this.setState.bind(this)
+        );
       }
     });
   };
+
   render() {
     if (authService.getCurrentUser()) {
       return <Redirect to="/conversations" />;

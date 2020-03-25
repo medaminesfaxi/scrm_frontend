@@ -7,6 +7,7 @@ const { Option } = Select;
 export default class Dashboard extends Component {
   state = {
     activeCard: 1,
+    data: [15, 10, 20, 50, 15, 40, 100, 50],
     agents: [
       { id: 1, name: 'Mohmed' },
       { id: 2, name: 'Omar' },
@@ -20,10 +21,14 @@ export default class Dashboard extends Component {
 
   fetchIncomingConversations = () => {
     this.setState({ activeCard: 1 });
+    let fake = [15, 10, 20, 50, 15, 40, 100, 50];
+    this.setState({ data: fake });
   };
 
   fetchResolvedConversations = () => {
     this.setState({ activeCard: 2 });
+    let fake = [20, 10, 30, 10, 0, 100, 120, 50];
+    this.setState({ data: fake });
   };
 
   formatData = () => {
@@ -32,7 +37,7 @@ export default class Dashboard extends Component {
       datasets: [
         {
           label: 'Performance',
-          data: [0, 20, 10, 30, 15, 40, 20, 50]
+          data: this.state.data
         }
       ]
     };

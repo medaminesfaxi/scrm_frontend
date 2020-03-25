@@ -44,7 +44,7 @@ export default function MessageBox(props) {
             left ? 'react-chat-messageLeft' : 'react-chat-messageRight'
           }`}
         >
-          <div className="react-chat-additional">{author.username}</div>
+          <div className="react-chat-additional">{author.fullname}</div>
           <div
             className={`react-chat-bubble ${
               left ? 'react-chat-leftBubble' : 'react-chat-rightBubble'

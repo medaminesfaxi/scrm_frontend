@@ -1,5 +1,5 @@
 /* 
-  @props : username , avatarSrc, is_admin, status
+  @props : fullname , avatarSrc, is_admin, status
 */
 
 import React, { Component } from 'react';
@@ -25,7 +25,7 @@ class NavBar extends Component {
     this.props.history.push('/login');
   };
   render() {
-    const { username, avatarSrc, is_admin } = this.props;
+    const { fullname, avatarSrc, is_admin } = this.props;
     return (
       <div className={styles.header}>
         <ul>
@@ -118,7 +118,7 @@ class NavBar extends Component {
               >
                 <Avatar size={36} icon="user" src={avatarSrc} />
               </Badge>
-              <span>{username}</span>
+              <span>{fullname}</span>
               <Icon
                 type="down"
                 style={{

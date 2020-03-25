@@ -28,7 +28,7 @@ class EditUserDrawer extends React.Component {
 
   render() {
     const { visible } = this.state;
-    const { loading, username, user_id } = this.props;
+    const { loading, fullname, user_id } = this.props;
     return (
       <>
         <Button
@@ -40,7 +40,7 @@ class EditUserDrawer extends React.Component {
           icon="edit"
         ></Button>
         <Drawer
-          title={'Edit user ' + username + ' #' + user_id}
+          title={'Edit user ' + fullname + ' #' + user_id}
           width={460}
           footer={null}
           onClose={this.handleCancel}

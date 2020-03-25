@@ -54,22 +54,6 @@ class SettingsForm extends Component {
           <h1>Reset your password</h1>
           <Form>
             <Form.Item hasFeedback>
-              {getFieldDecorator('newPassword', {
-                rules: [
-                  {
-                    required: true,
-                    message: 'Please input your new password!'
-                  },
-                  { min: 6 }
-                ]
-              })(
-                <Input.Password
-                  prefix={<Icon type="lock" className={styles.input__icon} />}
-                  placeholder="New password"
-                />
-              )}
-            </Form.Item>
-            <Form.Item hasFeedback>
               {getFieldDecorator('password', {
                 rules: [
                   {
@@ -87,11 +71,27 @@ class SettingsForm extends Component {
               )}
             </Form.Item>
             <Form.Item hasFeedback>
+              {getFieldDecorator('newPassword', {
+                rules: [
+                  {
+                    required: true,
+                    message: 'Please input your new password!'
+                  },
+                  { min: 6 }
+                ]
+              })(
+                <Input.Password
+                  prefix={<Icon type="lock" className={styles.input__icon} />}
+                  placeholder="New password"
+                />
+              )}
+            </Form.Item>
+            <Form.Item hasFeedback>
               {getFieldDecorator('confirm', {
                 rules: [
                   {
                     required: true,
-                    message: 'Please confirm your new password!'
+                    message: 'Please confirm your old password!'
                   },
                   { validator: this.compareToFirstPassword }
                 ]
@@ -103,6 +103,7 @@ class SettingsForm extends Component {
                 />
               )}
             </Form.Item>
+
             <Button
               disabled={loading}
               type="primary"

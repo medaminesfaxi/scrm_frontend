@@ -1,4 +1,5 @@
-// import { authService } from '../services/authService';
+import { authService } from '../services/authService';
+import axios from 'axios';
 import { message } from 'antd';
 
 /* type : error || success */
@@ -29,14 +30,40 @@ export const validImage = file => {
 };
 
 /* return authorization header with jwt token */
-// export function authHeader() {
-//   const currentUser = authService.currentUserValue;
-//   if (currentUser && currentUser.token) {
-//     return { Authorization: `Bearer ${currentUser.token}` };
-//   } else {
-//     return {};
-//   }
-// }
+export function authHeader() {
+  const currentUser = authService.getCurrentUser();
+  if (currentUser && currentUser.token) {
+    return { token: currentUser.token };
+  } else {
+    return {};
+  }
+}
+
+export const Request = async (type, path, data = {}, setLoading) => {
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_API_URL,
+    responseType: 'json'
+  });
+  const options = {
+    headers: {
+      token: authHeader()
+    }
+  };
+  try {
+    setLoading({ loading: true });
+    let res;
+    if (type === 'POST') res = await api.post(path, data, options);
+    else if (type === 'GET') res = await api.get(path, options);
+    else if (type === 'DELETE') res = await api.delete(path, options);
+    else notification('danger', 'Request type is not defined');
+    setLoading({ loading: false });
+    return res;
+  } catch (e) {
+    setLoading({ loading: false });
+    if (e.response) notification('danger', e.response.data.error);
+    return false;
+  }
+};
 
 /* handle responses */
 // export function handleResponse(response) {

@@ -81,7 +81,8 @@ article p {
   color: white;
 }
 
-.banner h1::after, .banner__card h1::after {
+.banner h1::after,
+.banner__card h1::after {
   content: '';
   display: block;
   margin-top: 4px;
@@ -99,7 +100,7 @@ article p {
 }
 
 .note {
-  background: #FFE7A9;
+  background: #ffe7a9;
   position: relative;
   padding: 36px 28px;
   margin: 6px;
@@ -120,5 +121,5 @@ article p {
   font-size: 18px;
   position: absolute;
   right: 18px;
-  top: 40%
+  top: 40%;
 }

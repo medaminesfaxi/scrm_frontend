@@ -20,7 +20,7 @@ class ChatBox extends React.Component {
     },
 
     conversation: {
-      assignedTo: 999,
+      assignedTo: 1,
       messages: []
     },
     dataLoading: false,
@@ -35,7 +35,7 @@ class ChatBox extends React.Component {
           ...this.state.conversation,
           messages: this.state.conversation.messages.concat({
             author: {
-              username: currentUser.username,
+              fullname: currentUser.fullname,
               id: currentUser.id,
               avatarUrl: currentUser.avatarSrc
             },

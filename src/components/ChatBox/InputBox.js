@@ -1,9 +1,8 @@
 import React from 'react';
-import { Icon, Button } from 'antd';
+import { Icon } from 'antd';
 import TextareaAutosize from 'react-textarea-autosize';
 
 export default function InputBox(props) {
-  const handleResumeClick = () => {};
   return (
     <div
       className={`react-chat-inputBox ${
@@ -30,13 +29,12 @@ export default function InputBox(props) {
       />
       {!props.disabled && !props.taken && (
         <button className="react-chat-sendButton" onClick={props.handleOnClick}>
-          <Icon type="aliwangwang" className="react-chat-sendButton" />
+          {props.loading ? (
+            <Icon type="loading" className="react-chat-sendButton" />
+          ) : (
+            <Icon type="aliwangwang" className="react-chat-sendButton" />
+          )}
         </button>
-      )}
-      {props.disabled && (
-        <Button type="primary" onClick={handleResumeClick}>
-          Resume conversation
-        </Button>
       )}
     </div>
   );

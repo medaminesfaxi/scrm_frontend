@@ -1,39 +1,78 @@
 import React, { Component } from 'react';
-import { Select, Divider, Button } from 'antd';
+import { Select, Divider, Button, Avatar } from 'antd';
 import { authService } from '../../services/authService';
+import { Request } from '../../shared/utils';
 
 const { Option } = Select;
 export default class Header extends Component {
   state = {
-    loading: false
+    users: [],
+    loading: false,
   };
-  onChangeAssignSelection = value => {
-    console.log(`selected ${value}`);
+  onChangeAssignSelection = async (value) => {
+    await Request(
+      'PUT',
+      '/api/conversations/assign/' + this.props.conversationId,
+      {
+        id: value,
+      }
+    );
+    window.location = '/conversations';
   };
-  resolveConversation = () => {};
-
+  resolveConversation = async () => {
+    this.setState({ loading: true });
+    await Request('PUT', '/api/conversations/' + this.props.conversationId, {
+      author: authService.getCurrentUser().fullname,
+    });
+    this.setState({ loading: false });
+    window.location = '/conversations';
+  };
+  componentDidMount() {
+    this.mounted = true;
+    const fetchUser = async () => {
+      const res = await Request('GET', '/api/admin/users');
+      if (this.mounted) {
+        let filteredUsers = res.data.filter(
+          (user) => user._id !== authService.getCurrentUser().id
+        );
+        this.setState({ users: filteredUsers });
+      }
+    };
+    fetchUser();
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   render() {
     if (!this.props.taken) {
-      const admin = authService.getCurrentUser().is_admin;
       return (
         <>
           <div
             style={{
               padding: '12px',
-              background: '#fff'
+              background: '#fff',
             }}
           >
-            {admin && (
-              <Select
-                style={{ width: 200 }}
-                placeholder="Assign to"
-                onChange={this.onChangeAssignSelection}
-              >
-                <Option value="mohamed">Mohamed</Option>
-                <Option value="jawher">Jawher</Option>
-                <Option value="moncef">Moncef</Option>
-              </Select>
-            )}
+            <Select
+              style={{ width: 200 }}
+              placeholder="Assign to"
+              onChange={this.onChangeAssignSelection}
+            >
+              {this.state.users.map((user) => {
+                return (
+                  <Option key={user._id} value={user._id}>
+                    <Avatar
+                      src={user.avatarSrc}
+                      size={16}
+                      icon="user"
+                      style={{ margin: '2px', cursor: 'pointer' }}
+                    />
+                    {'      '}
+                    {user.fullname}
+                  </Option>
+                );
+              })}
+            </Select>
             <Button
               onClick={this.resolveConversation}
               type="primary"
@@ -47,11 +86,13 @@ export default class Header extends Component {
           <Divider />
         </>
       );
-    } else
+    }
+    if (this.props.isBot)
       return (
         <Button type="primary" size="large" onClick={this.props.takeoverChat}>
           Assign to me
         </Button>
       );
+    else return null;
   }
 }

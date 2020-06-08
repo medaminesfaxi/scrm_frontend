@@ -6,7 +6,8 @@ import { Line } from 'react-chartjs-2';
 import { chartOptions, parseOptions, chart } from './vars.js';
 
 class Charts extends React.Component {
-  componentWillMount() {
+  constructor() {
+    super();
     if (window.Chart) {
       parseOptions(Chart, chartOptions());
     }
@@ -18,7 +19,7 @@ class Charts extends React.Component {
           <Line
             data={this.props.data}
             options={chart.options}
-            getDatasetAtEvent={e => console.log(e)}
+            getDatasetAtEvent={(e) => console.log(e)}
           />
         </div>
       </div>

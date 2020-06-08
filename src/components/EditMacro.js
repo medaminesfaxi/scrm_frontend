@@ -23,9 +23,15 @@ class AddMacroForm extends Component {
   };
   handleOk = e => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields(async (err, values) => {
       if (!err) {
+        this.setState({ confirmLoading: true });
+        await this.props.editMacro(values, this.props.macro._id);
+        this.setState({ confirmLoading: false });
         this.props.form.resetFields();
+        this.setState({
+          visible: false
+        });
       }
     });
   };

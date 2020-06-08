@@ -1,5 +1,6 @@
 {
   "name": "frontend",
+  "homepage": "https://scrm.herokuapp.com/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -17,7 +18,9 @@
     "react-highlight-words": "^0.16.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
-    "react-textarea-autosize": "^7.1.2"
+    "react-textarea-autosize": "^7.1.2",
+    "socket.io": "^2.3.0",
+    "uuid": "^8.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

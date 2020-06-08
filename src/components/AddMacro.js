@@ -4,24 +4,26 @@ const { TextArea } = Input;
 class AddMacroForm extends Component {
   state = {
     visible: false,
-    confirmLoading: false
+    confirmLoading: false,
   };
   showModal = () => {
     this.setState({
-      visible: true
+      visible: true,
     });
   };
   handleCancel = () => {
     this.setState({
-      visible: false
+      visible: false,
     });
     this.props.form.resetFields();
   };
-  handleOk = e => {
+  handleOk = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        this.props.CreateMacro(values);
+        this.setState({ confirmLoading: true });
+        await this.props.createMacro(values);
+        this.setState({ confirmLoading: false });
         this.props.form.resetFields();
       }
     });
@@ -30,7 +32,7 @@ class AddMacroForm extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <>
-        <Button type="primary" size="small" onClick={this.showModal}>
+        <Button type="primary" onClick={this.showModal}>
           Create a new macro
         </Button>
         <Modal
@@ -43,12 +45,12 @@ class AddMacroForm extends Component {
           <Form>
             <Form.Item>
               {getFieldDecorator('name', {
-                rules: [{ required: true, message: 'Please input a name' }]
+                rules: [{ required: true, message: 'Please input a name' }],
               })(<Input placeholder="Macro's name" />)}
             </Form.Item>
             <Form.Item>
               {getFieldDecorator('text', {
-                rules: [{ required: true, message: 'Please input some text' }]
+                rules: [{ required: true, message: 'Please input some text' }],
               })(<TextArea rows={4} placeholder="type some text" />)}
             </Form.Item>
             <Button

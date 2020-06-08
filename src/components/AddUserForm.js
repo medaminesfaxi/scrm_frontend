@@ -1,50 +1,49 @@
 import React from 'react';
 import { Form, Input, Button, Icon, Switch } from 'antd';
 import styles from '../pages/styles.module.css';
-import { emailPattern } from './../shared/utils';
+import { emailPattern, Request } from './../shared/utils';
 import { Checkbox } from 'antd';
 
 const CheckboxGroup = Checkbox.Group;
-const plainOptions = ['Mangement', 'Finance', 'IT'];
-const plainOptions_two = ['french', 'english', 'arabic'];
 class AddUserForm extends React.Component {
   state = {
     checkedListSkills: [],
     checkedListLanguages: [],
     is_admin: false,
     confirmDirty: false,
-    loading: false
+    loading: false,
   };
-
-  onChangeSkills = checkedListSkills => {
+  onChangeSkills = (checkedListSkills) => {
     this.setState({ checkedListSkills });
   };
-  onChangeLanguages = checkedListLanguages => {
+  onChangeLanguages = (checkedListLanguages) => {
     this.setState({ checkedListLanguages });
   };
-  onChangeAdmin = checked => {
+  onChangeAdmin = (checked) => {
     this.setState({ is_admin: checked });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
+        delete values.confirm;
         try {
           this.setState({ loading: true });
           let user = {
             skills: this.state.checkedListSkills,
             languages: this.state.checkedListLanguages,
             is_admin: this.state.is_admin,
-            ...values
+            ...values,
           };
-          this.props.handleCreateUser(user);
+          let res = await Request('POST', '/api/admin/users', user);
+          this.props.handleCreateUser(res.data);
           this.props.handleOk();
           this.props.form.resetFields();
           this.setState({
             checkedListSkills: [],
             checkedListLanguages: [],
-            is_admin: false
+            is_admin: false,
           });
           this.setState({ loading: false });
         } catch (e) {
@@ -53,7 +52,7 @@ class AddUserForm extends React.Component {
       }
     });
   };
-  handleConfirmBlur = e => {
+  handleConfirmBlur = (e) => {
     const { value } = e.target;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
@@ -76,13 +75,12 @@ class AddUserForm extends React.Component {
   };
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { loading } = this.state;
     return (
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <Form>
@@ -98,8 +96,8 @@ class AddUserForm extends React.Component {
               rules: [
                 { required: true, message: 'Please input your Full Name' },
                 { min: 4 },
-                { max: 20 }
-              ]
+                { max: 20 },
+              ],
             })(
               <Input
                 prefix={<Icon type="user" className={styles.input__icon} />}
@@ -113,9 +111,9 @@ class AddUserForm extends React.Component {
                 { required: true, message: 'Please input your Email!' },
                 {
                   pattern: emailPattern,
-                  message: 'Please input a valid Email!'
-                }
-              ]
+                  message: 'Please input a valid Email!',
+                },
+              ],
             })(
               <Input
                 prefix={<Icon type="mail" className={styles.input__icon} />}
@@ -128,8 +126,8 @@ class AddUserForm extends React.Component {
               rules: [
                 { required: true, message: 'Please input your password!' },
                 { min: 6 },
-                { validator: this.validateToNextPassword }
-              ]
+                { validator: this.validateToNextPassword },
+              ],
             })(
               <Input.Password
                 prefix={<Icon type="lock" className={styles.input__icon} />}
@@ -142,10 +140,10 @@ class AddUserForm extends React.Component {
               rules: [
                 {
                   required: true,
-                  message: 'Please confirm your password!'
+                  message: 'Please confirm your password!',
                 },
-                { validator: this.compareToFirstPassword }
-              ]
+                { validator: this.compareToFirstPassword },
+              ],
             })(
               <Input.Password
                 onBlur={this.handleConfirmBlur}
@@ -158,18 +156,18 @@ class AddUserForm extends React.Component {
             <CheckboxGroup
               value={this.state.checkedListSkills}
               onChange={this.onChangeSkills}
-              options={plainOptions}
+              options={this.props.skillsOptions}
             />
           </Form.Item>
           <Form.Item label="Select languages">
             <CheckboxGroup
               value={this.state.checkedListLanguages}
               onChange={this.onChangeLanguages}
-              options={plainOptions_two}
+              options={this.props.languagesOptions}
             />
           </Form.Item>
           <Button
-            disabled={loading}
+            disabled={this.state.loading}
             type="primary"
             htmlType="submit"
             className={styles.btn}

@@ -5,71 +5,162 @@ import MessageBox from './MessageBox';
 import Header from './Header';
 import Footer from './Footer';
 import { authService } from '../../services/authService';
+import { Request } from '../../shared/utils';
 import './ChatBox.css';
+import IOClient from 'socket.io-client';
+import { Redirect } from 'react-router-dom';
 
 class ChatBox extends React.Component {
   state = {
     note: false,
-
+    notfound: false,
     inputText: '',
-
-    macros: {
-      greeting: 'Hello and welcome wow omg nice you are here!',
-      bye: 'omg no ... see you next time bye!',
-      thank: 'thank you so much'
-    },
-
-    conversation: {
-      assignedTo: 1,
-      messages: []
-    },
-    dataLoading: false,
-    border: ''
+    conversation: { messages: [] },
+    dataLoading: true,
+    loading: false,
+    border: '',
   };
-
-  handleOnSendMessage = message => {
-    if (message.length > 0 && !this.state.note) {
-      const currentUser = authService.getCurrentUser();
+  componentDidMount() {
+    this.OldconversationID = this.props.conversationId.id;
+    this.mounted = true;
+    this.io = IOClient(process.env.REACT_APP_API_URL);
+    this.io.on('received', (data) => {
       this.setState({
         conversation: {
           ...this.state.conversation,
           messages: this.state.conversation.messages.concat({
             author: {
-              fullname: currentUser.fullname,
-              id: currentUser.id,
-              avatarUrl: currentUser.avatarSrc
+              fullname: data.author.fullname,
+              id: data.author.id,
+              avatarUrl: data.author.avatarUrl,
             },
-            text: message,
-            timestamp: +new Date(),
-            type: 'text'
-          })
+            text: data.text,
+            timestamp: data.timestamp,
+            type: 'text',
+          }),
         },
+      });
+    });
+    const fetchData = async () => {
+      this.setState({ dataLoading: true });
+      let res = await Request(
+        'GET',
+        '/api/conversations/' + this.props.conversationId.id
+      );
+      if (this.mounted)
+        if (res && res.data.length > 0) {
+          this.setState(
+            {
+              conversation: res.data[0],
+              dataLoading: false,
+              notfound: false,
+            },
+            () => {
+              this.io.emit('join', res.data[0].customer[0].id);
+              this.props.getNotes(res.data[0].notes);
+              this.props.getCustomerDetails(res.data[0].customer);
+            }
+          );
+        } else
+          this.setState({
+            dataLoading: false,
+            notfound: true,
+          });
+    };
+    fetchData();
+    this.scrollToBottom();
+  }
+  componentDidUpdate() {
+    this.newConversationID = this.props.conversationId.id;
+    if (this.newConversationID !== this.OldconversationID) {
+      this.OldconversationID = this.newConversationID;
+      const fetchData = async () => {
+        this.setState({ dataLoading: true });
+        let res = await Request(
+          'GET',
+          '/api/conversations/' + this.props.conversationId.id
+        );
+        if (this.mounted)
+          this.io.emit('leave', this.state.conversation.customer[0].id);
+        if (res && res.data.length > 0) {
+          this.setState(
+            {
+              conversation: res.data[0],
+              dataLoading: false,
+              notfound: false,
+            },
+            () => {
+              this.io.emit('join', res.data[0].customer[0].id);
+              this.props.getNotes(res.data[0].notes);
+              this.props.getCustomerDetails(res.data[0].customer);
+            }
+          );
+        } else
+          this.setState({
+            dataLoading: false,
+            notfound: true,
+          });
+      };
+      if (this.mounted) fetchData();
+    }
+    this.scrollToBottom();
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+    this.io.disconnect();
+  }
+  handleOnSendMessage = async (message) => {
+    if (message.length > 0 && !this.state.note && !this.state.loading) {
+      const currentUser = authService.getCurrentUser();
+      const msg = {
+        author: {
+          fullname: currentUser.fullname,
+          id: currentUser.id,
+          avatarUrl: currentUser.avatarSrc,
+        },
+        text: message,
+        timestamp: +new Date(),
+      };
+      this.setState({ loading: true });
+      await Request(
+        'POST',
+        '/api/conversations/messages/' + this.props.conversationId.id,
+        { message: msg }
+      );
+      this.setState({
+        loading: false,
         inputText: '',
-        border: '2px solid #ccc'
+        border: '2px solid #ccc',
       });
     }
-    if (this.state.note) {
-      this.props.AddNewNote(message);
-      this.setState({ inputText: '', border: '2px solid #ccc', note: false });
+    if (this.state.note && !this.state.loading) {
+      this.setState({ loading: true });
+      await this.props.AddNewNote(message);
+      this.setState({
+        inputText: '',
+        border: '2px solid #ccc',
+        note: false,
+        loading: false,
+      });
     }
   };
 
-  handleOnChange = e => {
+  handleOnChange = (e) => {
     this.setState({ inputText: e.target.value });
   };
 
-  strip = str => {
+  strip = (str) => {
     return str.replace(/^\s+|\s+$/g, '');
   };
 
-  handleOnClick = e => {
+  handleOnClick = (e) => {
     let str = this.strip(this.state.inputText);
     if (str.length) {
       this.handleOnSendMessage(str);
     }
   };
 
-  onKeyPress = e => {
+  onKeyPress = (e) => {
     if (e.shiftKey && e.charCode === 13) {
       let str = this.strip(this.state.inputText);
       if (str.length) {
@@ -86,96 +177,113 @@ class ChatBox extends React.Component {
         this.messagesList.scrollHeight - this.messagesList.clientHeight;
     }
   };
-  componentDidMount() {
-    this.scrollToBottom();
-  }
 
-  componentDidUpdate() {
-    this.scrollToBottom();
-  }
   addNote = () => {
     this.setState({ note: true, border: '2px solid #FFA800' });
     this.childRef.focus();
   };
-  useMacro = value => {
-    this.setState({ inputText: this.state.macros[value], selectedMacro: '' });
+  useMacro = (value) => {
+    this.setState({ inputText: value, selectedMacro: '' });
   };
-  setRef = input => {
+  setRef = (input) => {
     this.childRef = input;
   };
 
-  takeoverChat = () => {
-    this.setState({
-      conversation: { ...this.state.conversation, assignedTo: 1 }
-    });
+  takeoverChat = async () => {
+    let res = await Request(
+      'PUT',
+      '/api/conversations/takeover/' + this.props.conversationId.id,
+      {
+        id: authService.getCurrentUser().id,
+      }
+    );
+    if (res.status === 200) window.location = '/conversations';
   };
 
   render() {
-    const taken =
-      this.state.conversation.assignedTo !== 1 &&
-      this.state.conversation.assignedTo !== 999;
-    const isBot = this.state.conversation.assignedTo === 999;
-
-    const { placeholder } = this.props;
-    const userId = 1;
-    const { messages } = this.state.conversation;
-
-    const messageList = messages.map((message, idx) => {
+    let scrollBehavior =
+      this.state.conversation.messages.length > 50 ? 'auto' : 'smooth';
+    if (this.state.dataLoading) {
       return (
-        <MessageBox
-          key={idx}
-          left={message.author && message.author.id !== userId}
-          timestampFormat="fromNow"
-          {...message}
-        />
+        <Card
+          style={{ marginTop: 4, padding: 0, flex: '29%' }}
+          loading={true}
+        ></Card>
       );
-    });
+    }
+    if (this.state.notfound) {
+      return <Redirect to="/error" />;
+    } else {
+      const userId = authService.getCurrentUser().id;
+      const customerID = this.state.conversation.customer[0].id;
 
-    return (
-      <Card
-        style={{ marginTop: 4, padding: 0, flex: '29%' }}
-        loading={this.state.dataLoading}
-      >
-        <Header taken={isBot} takeoverChat={this.takeoverChat} />
-        <div className="react-chat-container">
-          <div className="react-chat-row">
-            <div className="react-chat-viewerBox">
-              <div
-                className="react-chat-messagesList"
-                ref={el => (this.messagesList = el)}
-              >
-                <div className="react-chat-messagesListContent">
-                  {messageList}
+      const taken = this.state.conversation.assignedTo !== userId;
+      const isBot = this.state.conversation.assignedTo === '999';
+
+      const { placeholder } = this.props;
+      const { messages } = this.state.conversation;
+      let messageList = [];
+      if (messages.length > 0) {
+        messageList = messages.map((message, idx) => {
+          return (
+            <MessageBox
+              type="text"
+              key={idx}
+              left={message.author && message.author.id === customerID}
+              timestampFormat="fromNow"
+              {...message}
+            />
+          );
+        });
+      }
+      return (
+        <Card style={{ marginTop: 4, padding: 0, flex: '29%' }} loading={false}>
+          <Header
+            isBot={isBot}
+            taken={taken}
+            takeoverChat={this.takeoverChat}
+            conversationId={this.props.conversationId.id}
+          />
+          <div className="react-chat-container">
+            <div className="react-chat-row">
+              <div className="react-chat-viewerBox">
+                <div
+                  className="react-chat-messagesList"
+                  style={{ scrollBehavior }}
+                  ref={(el) => (this.messagesList = el)}
+                >
+                  <div className="react-chat-messagesListContent">
+                    {messageList}
+                  </div>
                 </div>
+                {isBot || taken ? null : (
+                  <>
+                    <Footer
+                      conversationId={this.props.conversationId.id}
+                      selectedMacro={this.selectedMacro}
+                      macros={this.state.macros}
+                      useMacro={this.useMacro}
+                      tags={this.state.conversation.tags}
+                      addNote={this.addNote}
+                    />
+                    <InputBox
+                      loading={this.state.loading}
+                      border={this.state.border}
+                      setRef={this.setRef}
+                      inputText={this.state.inputText}
+                      handleOnClick={this.handleOnClick}
+                      onKeyPress={this.onKeyPress}
+                      handleOnChange={this.handleOnChange}
+                      placeholder={placeholder}
+                    />
+                  </>
+                )}
               </div>
-              {isBot ? null : (
-                <>
-                  <Footer
-                    selectedMacro={this.selectedMacro}
-                    macros={this.state.macros}
-                    useMacro={this.useMacro}
-                    tags={this.props.tags}
-                    addNote={this.addNote}
-                    disabled={!taken}
-                  />
-                  <InputBox
-                    border={this.state.border}
-                    setRef={this.setRef}
-                    inputText={this.state.inputText}
-                    handleOnClick={this.handleOnClick}
-                    onKeyPress={this.onKeyPress}
-                    handleOnChange={this.handleOnChange}
-                    taken={taken}
-                    placeholder={placeholder}
-                  />
-                </>
-              )}
             </div>
           </div>
-        </div>
-      </Card>
-    );
+        </Card>
+      );
+    }
   }
 }
-
 export default ChatBox;

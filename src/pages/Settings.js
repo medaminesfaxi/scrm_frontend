@@ -1,34 +1,33 @@
 import React, { Component } from 'react';
 import styles from './styles.module.css';
 import { Form, Input, Icon, Button } from 'antd';
-import { notification } from './../shared/utils';
-
+import { Request } from './../shared/utils';
 class SettingsForm extends Component {
   state = {
     loading: false,
-    confirmDirty: false
+    confirmDirty: false,
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        try {
-          this.setState({ loading: true });
-          notification('success', 'Updated  succesfully!');
-        } catch (e) {
-          this.setState({ loading: false });
-        }
+        this.setState({ loading: true });
+        Request('PUT', '/api/user/reset_password', {
+          oldPassword: values.password,
+          newPassword: values.newPassword,
+        });
+        this.setState({ loading: false });
       }
     });
   };
-  handleConfirmBlur = e => {
+  handleConfirmBlur = (e) => {
     const { value } = e.target;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
 
   compareToFirstPassword = (rule, value, callback) => {
     const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
+    if (value && value !== form.getFieldValue('newPassword')) {
       callback('Please repeat your password correctly!');
     } else {
       callback();
@@ -58,11 +57,10 @@ class SettingsForm extends Component {
                 rules: [
                   {
                     required: true,
-                    message: 'Please input your old password!'
+                    message: 'Please input your old password!',
                   },
                   { min: 6 },
-                  { validator: this.validateToNextPassword }
-                ]
+                ],
               })(
                 <Input.Password
                   prefix={<Icon type="lock" className={styles.input__icon} />}
@@ -75,10 +73,11 @@ class SettingsForm extends Component {
                 rules: [
                   {
                     required: true,
-                    message: 'Please input your new password!'
+                    message: 'Please input your new password!',
                   },
-                  { min: 6 }
-                ]
+                  { min: 6 },
+                  { validator: this.validateToNextPassword },
+                ],
               })(
                 <Input.Password
                   prefix={<Icon type="lock" className={styles.input__icon} />}
@@ -91,10 +90,10 @@ class SettingsForm extends Component {
                 rules: [
                   {
                     required: true,
-                    message: 'Please confirm your old password!'
+                    message: 'Please confirm your old password!',
                   },
-                  { validator: this.compareToFirstPassword }
-                ]
+                  { validator: this.compareToFirstPassword },
+                ],
               })(
                 <Input.Password
                   onBlur={this.handleConfirmBlur}

@@ -7,18 +7,16 @@ import { authService } from './../services/authService';
 
 class LoginForm extends React.Component {
   state = {
-    loading: false
+    loading: false,
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        authService.login(
-          values.email,
-          values.password,
-          this.setState.bind(this)
-        );
+        this.setState({ loading: true });
+        await authService.login(values.email, values.password);
+        this.setState({ loading: false });
       }
     });
   };
@@ -42,9 +40,9 @@ class LoginForm extends React.Component {
                   { required: true, message: 'Please input your email!' },
                   {
                     pattern: emailPattern,
-                    message: 'Please input a valid email!'
-                  }
-                ]
+                    message: 'Please input a valid email!',
+                  },
+                ],
               })(
                 <Input
                   prefix={<Icon type="mail" className={styles.input__icon} />}
@@ -56,8 +54,8 @@ class LoginForm extends React.Component {
               {getFieldDecorator('password', {
                 rules: [
                   { required: true, message: 'Please input your password!' },
-                  { min: 6 }
-                ]
+                  { min: 6 },
+                ],
               })(
                 <Input.Password
                   prefix={<Icon type="lock" className={styles.input__icon} />}
@@ -65,7 +63,7 @@ class LoginForm extends React.Component {
                   placeholder="Password"
                 />
               )}
-              <Link to="/reset">Forgot password?</Link>
+              <Link to="/ForgotPassword">Forgot password?</Link>
             </Form.Item>
             <Button
               disabled={loading}

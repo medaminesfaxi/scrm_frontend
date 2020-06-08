@@ -1,25 +1,99 @@
-/* 
-  @props : fullname , avatarSrc, is_admin, status
-*/
-
 import React, { Component } from 'react';
 import styles from './navbar.module.css';
-import { Icon, Badge, Avatar, Dropdown } from 'antd';
+import { Icon, Badge, Avatar, Dropdown, notification } from 'antd';
 import { NavLink, Link, withRouter } from 'react-router-dom';
 import logo from '../../header_logo.png';
 import SubMenu from './SubMenu';
 import { authService } from './../../services/authService';
+import { Request } from '../../shared/utils';
+import socketIOClient from 'socket.io-client';
 class NavBar extends Component {
   state = {
-    status: 'success'
+    counter: 0,
+    status: 'success',
   };
+  componentDidMount() {
+    this.mounted = true;
+    this.socket = socketIOClient(process.env.REACT_APP_API_URL);
+    this.socket.emit('join', this.props.id);
+    this.socket.on('addedNewConversation', (newConversation) => {
+      notification.config({
+        placement: 'topRight',
+        top: 120,
+        duration: 1.45,
+      });
+      notification.open({
+        message: (
+          <>
+            {' '}
+            <Avatar src={newConversation.customerAvatar} />{' '}
+            {newConversation.from}
+            {'  '}
+            sent you a message
+          </>
+        ),
+      });
+    });
+    if (this.state.counter > 0)
+      document.title = '(' + this.state.counter + ') SCRM';
+    const getStatus = async () => {
+      let res = await Request('GET', '/api/user/status');
+      if (this.mounted)
+        this.setState(
+          {
+            status: res.data.status.status,
+            counter: res.data.conversations,
+          },
+          () => {
+            this.socket.emit('onlineUsers', {
+              status: this.state.status,
+              id: this.props.id,
+              fullname: this.props.fullname,
+              avatarSrc: this.props.avatarSrc,
+            });
+          }
+        );
+    };
+    getStatus();
+    this.socket.on('counterChange', () => {
+      document.title = 'You have a new message';
+      this.setState((prevState) => {
+        return { counter: prevState.counter + 1 };
+      });
+    });
+  }
+  componentDidUpdate() {
+    if (this.state.counter > 0)
+      setTimeout(
+        () => (document.title = '(' + this.state.counter + ') SCRM'),
+        3000
+      );
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   onClick = async () => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
     let status;
-    status = this.state.status === 'warning' ? 'success' : 'warning';
+    if (this.state.status === 'warning') {
+      status = 'success';
+      this.socket.emit('onlineUsers', {
+        status,
+        id: this.props.id,
+        fullname: this.props.fullname,
+        avatarSrc: this.props.avatarSrc,
+      });
+    } else {
+      status = 'warning';
+      this.socket.emit('onlineUsers', {
+        status,
+        id: this.props.id,
+        fullname: this.props.fullname,
+        avatarSrc: this.props.avatarSrc,
+      });
+    }
+    await Request('PUT', '/api/user/status', { status });
     this.setState({ status });
   };
-
   logout = () => {
     authService.logout();
     this.props.history.push('/login');
@@ -41,7 +115,7 @@ class NavBar extends Component {
                 to="/conversations"
                 style={{ textAlign: 'center' }}
               >
-                <Badge count={5} offset={['-10,0']}>
+                <Badge count={this.state.counter} offset={['-10,0']}>
                   <Icon
                     type="message"
                     theme="twoTone"
@@ -68,7 +142,7 @@ class NavBar extends Component {
                       margin: 0,
                       padding: 0,
                       position: 'relative',
-                      top: '-15px'
+                      top: '-15px',
                     }}
                   >
                     {' '}
@@ -124,7 +198,7 @@ class NavBar extends Component {
                 style={{
                   fontSize: '22px',
                   position: 'relative',
-                  left: '-14px'
+                  left: '-14px',
                 }}
               />
             </div>

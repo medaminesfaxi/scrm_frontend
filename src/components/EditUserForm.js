@@ -2,61 +2,54 @@ import React from 'react';
 import { Form, Button } from 'antd';
 import styles from '../pages/styles.module.css';
 import { Checkbox } from 'antd';
+import { Request } from './../shared/utils';
 
 const CheckboxGroup = Checkbox.Group;
-const defaultCheckedList = ['Mangement', 'Finance'];
-const plainOptions = ['Mangement', 'Finance', 'IT'];
-const plainOptions_two = ['French', 'English', 'Arabic'];
+
 class EditUserForm extends React.Component {
   state = {
-    checkedListSkills: defaultCheckedList,
+    checkedListSkills: [],
     checkedListLanguages: [],
+    skillsOptions: [],
+    languagesOptions: [],
     confirmDirty: false,
-    loading: false
+    loading: false,
   };
 
-  onChangeSkills = checkedListSkills => {
+  componentDidMount() {
+    let languages = [];
+    for (let i = 0; i < this.props.checkedLanguages.length; i++) {
+      languages.push(this.props.checkedLanguages[i]._id);
+    }
+    let skills = [];
+    for (let i = 0; i < this.props.checkedSkills.length; i++) {
+      skills.push(this.props.checkedSkills[i]._id);
+    }
+    this.setState({
+      checkedListSkills: skills,
+      checkedListLanguages: languages,
+    });
+  }
+  onChangeSkills = (checkedListSkills) => {
     this.setState({ checkedListSkills });
   };
-  onChangeLanguages = checkedListLanguages => {
+  onChangeLanguages = (checkedListLanguages) => {
     this.setState({ checkedListLanguages });
   };
 
-  handleSubmit = e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    this.props.form.validateFields(async (err, values) => {
-      if (!err) {
-        try {
-          this.setState({ loading: true });
-          this.props.handleOk();
-          this.props.form.resetFields();
-        } catch (e) {
-          this.setState({ loading: false });
-        }
-      }
+    this.setState({ loading: true });
+    await Request('PUT', '/api/admin/users/' + this.props.userId, {
+      languages: this.state.checkedListLanguages,
+      skills: this.state.checkedListSkills,
     });
-  };
-  handleConfirmBlur = e => {
-    const { value } = e.target;
-    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
-  };
-
-  compareToFirstPassword = (rule, value, callback) => {
-    const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('Please repeat your password correctly!');
-    } else {
-      callback();
-    }
+    this.setState({ loading: false });
+    window.location.reload();
+    this.props.handleOk();
+    this.props.form.resetFields();
   };
 
-  validateToNextPassword = (rule, value, callback) => {
-    const { form } = this.props;
-    if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
-    }
-    callback();
-  };
   render() {
     const { loading } = this.state;
     return (
@@ -64,7 +57,7 @@ class EditUserForm extends React.Component {
         style={{
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <Form>
@@ -72,14 +65,14 @@ class EditUserForm extends React.Component {
             <CheckboxGroup
               value={this.state.checkedListSkills}
               onChange={this.onChangeSkills}
-              options={plainOptions}
+              options={this.props.skillsOptions}
             />
           </Form.Item>
           <Form.Item label="Select languages">
             <CheckboxGroup
               value={this.state.checkedListLanguages}
               onChange={this.onChangeLanguages}
-              options={plainOptions_two}
+              options={this.props.languagesOptions}
             />
           </Form.Item>
           <Button

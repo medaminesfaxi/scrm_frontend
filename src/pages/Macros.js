@@ -3,20 +3,7 @@ import styles from './styles.module.css';
 import { Table, Button, Popconfirm, Divider } from 'antd';
 import AddMacro from './../components/AddMacro';
 import EditMacro from './../components/EditMacro';
-
-const data = [
-  {
-    key: '2',
-    name: 'greeting',
-    text:
-      'Hello and welcome everyone this is great!, Hello and welcome everyone this is great!, Hello and welcome everyone this is great!, Hello and welcome everyone this is great!, Hello and welcome everyone this is great!'
-  },
-  {
-    key: '3',
-    name: 'Bye',
-    text: 'Good bye my lover good bye my friend!'
-  }
-];
+import { Request } from './../shared/utils';
 
 export default class Macros extends Component {
   constructor(props) {
@@ -26,13 +13,13 @@ export default class Macros extends Component {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
-        width: '30%'
+        width: '30%',
       },
       {
         title: 'Text',
         dataIndex: 'text',
         key: 'text',
-        width: '60%'
+        width: '60%',
       },
       {
         title: 'Action',
@@ -42,10 +29,10 @@ export default class Macros extends Component {
             <>
               <Popconfirm
                 title="Sure to delete?"
-                onConfirm={() => this.handleDelete(record.key)}
+                onConfirm={() => this.handleDelete(record._id)}
               >
                 <Button
-                  loading={this.state.buttonLoading}
+                  loading={this.state.btnLoading}
                   shape="circle"
                   type="danger"
                   size="small"
@@ -55,43 +42,55 @@ export default class Macros extends Component {
               <Divider type="vertical"></Divider>
               <EditMacro editMacro={this.editMacro} macro={record} />
             </>
-          ) : null
-      }
+          ) : null,
+      },
     ];
   }
   state = {
-    buttonLoading: false,
-    dataSource: data
+    loading: false,
+    dataSource: [],
+    btnLoading: false,
   };
-
-  handleDelete = key => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-  };
-  createMacro = values => {
-    const { name, text } = values;
-    let newMacro = {
-      key: parseInt(
-        this.state.dataSource[this.state.dataSource.length - 1].key + 1
-      ).toString(),
-      name,
-      text
+  componentDidMount() {
+    this.mounted = true;
+    const fetchData = async () => {
+      this.setState({ loading: true });
+      let res = await Request('GET', '/api/macro');
+      if (this.mounted) {
+        this.setState({ dataSource: res.data, loading: false });
+      }
     };
+    fetchData();
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+  handleDelete = async (_id) => {
+    this.setState({ btnLoading: true });
+    await Request('DELETE', `/api/macro/${_id}`);
+    const dataSource = [...this.state.dataSource];
+    this.setState({
+      dataSource: dataSource.filter((item) => item._id !== _id),
+    });
+    this.setState({ btnLoading: false });
+  };
+  createMacro = async (values) => {
+    const { name, text } = values;
+    let res = await Request('POST', '/api/macro', { name, text });
     let ds = [...this.state.dataSource];
-    ds.push(newMacro);
+    ds.push(res.data);
     this.setState({ dataSource: ds });
   };
-  editMacro = values => {
+  editMacro = async (values, _id) => {
     const { name, text } = values;
-    let newMacro = {
-      key: parseInt(
-        this.state.dataSource[this.state.dataSource.length - 1].key + 1
-      ).toString(),
-      name,
-      text
-    };
+    await Request('PUT', `/api/macro/${_id}`, { name, text });
     let ds = [...this.state.dataSource];
-    ds.push(newMacro);
+    for (let i = 0; i < ds.length; i++) {
+      if (ds[i]._id === _id) {
+        ds[i].name = name;
+        ds[i].text = text;
+      }
+    }
     this.setState({ dataSource: ds });
   };
   render() {
@@ -105,7 +104,12 @@ export default class Macros extends Component {
             className={styles.bigger__container + ' ' + styles.table__container}
           >
             <AddMacro createMacro={this.createMacro} />
-            <Table columns={this.columns} dataSource={this.state.dataSource} />
+            <Table
+              loading={this.state.loading}
+              columns={this.columns}
+              dataSource={this.state.dataSource}
+              rowKey="_id"
+            />
           </div>
         </article>
       </>

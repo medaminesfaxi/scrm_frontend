@@ -81,8 +81,7 @@ article p {
   color: white;
 }
 
-.banner h1::after,
-.banner__card h1::after {
+.banner h1::after, .banner__card h1::after {
   content: '';
   display: block;
   margin-top: 4px;

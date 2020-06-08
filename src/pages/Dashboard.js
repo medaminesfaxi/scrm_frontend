@@ -1,48 +1,120 @@
 import React, { Component } from 'react';
 import styles from './styles.module.css';
 import Charts from './../components/Charts';
-import { Divider, Select } from 'antd';
+import { Divider, Select, Avatar, Spin, Icon } from 'antd';
+import { Request } from './../shared/utils';
 
+const antIcon = <Icon type="loading" style={{ fontSize: 24 }} spin />;
 const { Option } = Select;
+
 export default class Dashboard extends Component {
   state = {
+    optionLoading: false,
+    loading: false,
     activeCard: 1,
-    data: [15, 10, 20, 50, 15, 40, 100, 50],
-    agents: [
-      { id: 1, name: 'Mohmed' },
-      { id: 2, name: 'Omar' },
-      { id: 3, name: 'Ayoub' },
-      { id: 4, name: 'Skon' }
-    ]
+    resolutionTime: 0,
+    firstResponseTime: 0,
+    incomingConversations: [],
+    resolvedConversations: [],
+    chartData: [],
+    users: [],
   };
-  handleChange = value => {
-    console.log('value');
+  componentDidMount() {
+    this.mounted = true;
+    const fetchUser = async () => {
+      this.setState({ optionLoading: true });
+      const res = await Request('GET', '/api/admin/users');
+      if (this.mounted) {
+        this.setState({ users: res.data, optionLoading: false });
+      }
+    };
+    const fetchStats = async () => {
+      this.setState({ loading: true });
+      const res = await Request('GET', '/api/admin/analytics/all');
+
+      if (this.mounted) {
+        this.setState({
+          loading: false,
+          chartData: res.data.incoming_conversations,
+          incomingConversations: res.data.incoming_conversations,
+          resolvedConversations: res.data.resolved_conversations,
+          resolutionTime: res.data.resolution_time,
+          firstResponseTime: res.data.firstResponse_time,
+        });
+      }
+    };
+    fetchStats();
+    fetchUser();
+  }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  handleChange = async (value) => {
+    this.setState({ loading: true });
+    const res = await Request('GET', '/api/admin/analytics/' + value);
+    this.setState({
+      loading: false,
+      chartData: res.data.incoming_conversations,
+      incomingConversations: res.data.incoming_conversations,
+      resolvedConversations: res.data.resolved_conversations,
+      resolutionTime: res.data.resolution_time,
+      firstResponseTime: res.data.firstResponse_time,
+    });
   };
 
   fetchIncomingConversations = () => {
-    this.setState({ activeCard: 1 });
-    let fake = [15, 10, 20, 50, 15, 40, 100, 50];
-    this.setState({ data: fake });
+    this.setState({
+      activeCard: 1,
+      chartData: this.state.incomingConversations,
+    });
   };
 
   fetchResolvedConversations = () => {
-    this.setState({ activeCard: 2 });
-    let fake = [20, 10, 30, 10, 0, 100, 120, 50];
-    this.setState({ data: fake });
+    this.setState({
+      activeCard: 2,
+      chartData: this.state.resolvedConversations,
+    });
   };
 
   formatData = () => {
     return {
-      labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      labels: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ],
       datasets: [
         {
           label: 'Performance',
-          data: this.state.data
-        }
-      ]
+          data: this.state.chartData,
+        },
+      ],
     };
   };
   render() {
+    let rTotal = this.state.resolutionTime;
+    let rHours = Math.floor(rTotal / 3600);
+    rTotal = rTotal - rHours * 3600;
+    let rMins = Math.floor(rTotal / 60);
+    rTotal = rTotal - rMins * 60;
+    let rSec = Math.floor(rTotal);
+
+    let fTotal = this.state.firstResponseTime;
+    let fHours = Math.floor(fTotal / 3600);
+    fTotal = fTotal - fHours * 3600;
+    let fMins = Math.floor(fTotal / 60);
+    fTotal = fTotal - fMins * 60;
+    let fSec = Math.floor(fTotal);
     return (
       <>
         <div className={styles.banner}>
@@ -50,52 +122,78 @@ export default class Dashboard extends Component {
         </div>
         <div className="stats ">
           <Select
+            loading={this.state.optionLoading}
             style={{ width: 180 }}
             onChange={this.handleChange}
             defaultValue="All agents"
           >
-            <Option value={'All agents'}>All agents</Option>
-            {this.state.agents.map(agent => {
+            <Option value={'all'}>All agents</Option>
+            {this.state.users.map((user) => {
               return (
-                <Option key={agent.id} value={agent.id}>
-                  {agent.name}
+                <Option key={user._id} value={user._id}>
+                  <Avatar
+                    src={user.avatarSrc}
+                    size={16}
+                    icon="user"
+                    style={{ margin: '2px', cursor: 'pointer' }}
+                  />
+                  {'      '}
+                  {user.fullname}
                 </Option>
               );
             })}
           </Select>
           <Divider></Divider>
           <br />
-          <div
-            className={
-              this.state.activeCard === 1 ? ' stat__card active' : 'stat__card'
-            }
-            onClick={this.fetchIncomingConversations}
-          >
-            <h2>156</h2>
-            <h3>Incoming Conversations</h3>
-          </div>
-          <div
-            className={
-              this.state.activeCard === 2 ? 'stat__card active' : 'stat__card'
-            }
-            onClick={this.fetchResolvedConversations}
-          >
-            <h2>65</h2>
-            <h3>Resolved Conversations</h3>
-          </div>
-          <div className="stat__card">
-            <h2>
-              22<span>mins</span> 5<span>sec</span>
-            </h2>
-            <h3>First Response Time</h3>
-          </div>
-          <div className="stat__card">
-            <h2>
-              5<span>mins</span>
-            </h2>
-            <h3>Resolution Time</h3>
-          </div>
-          <Charts data={this.formatData} />
+          <Spin spinning={this.state.loading} indicator={antIcon}>
+            <div
+              className={
+                this.state.activeCard === 1
+                  ? ' stat__card active'
+                  : 'stat__card'
+              }
+              onClick={this.fetchIncomingConversations}
+            >
+              <h2>
+                {this.state.incomingConversations.reduce((a, b) => a + b, 0)}
+              </h2>
+              <h3>Incoming Conversations</h3>
+            </div>
+            <div
+              className={
+                this.state.activeCard === 2 ? 'stat__card active' : 'stat__card'
+              }
+              onClick={this.fetchResolvedConversations}
+            >
+              <h2>
+                {this.state.resolvedConversations.reduce((a, b) => a + b, 0)}
+              </h2>
+              <h3>Resolved Conversations</h3>
+            </div>
+            <div className="stat__card">
+              <h2>
+                {this.state.resolutionTime === 0 ? ' N/A ' : fHours}
+                <span>Hours </span>
+                {this.state.resolutionTime === 0 ? ' N/A ' : fMins}
+                <span>mins </span>
+                {this.state.resolutionTime === 0 ? ' N/A ' : fSec}
+                <span>sec </span>
+              </h2>
+              <h3>First Response Time</h3>
+            </div>
+            <div className="stat__card">
+              <h2>
+                {this.state.resolutionTime === 0 ? ' N/A ' : rHours}
+                <span>Hours </span>
+                {this.state.resolutionTime === 0 ? ' N/A ' : rMins}
+                <span>mins </span>
+                {this.state.resolutionTime === 0 ? ' N/A ' : rSec}
+                <span>sec </span>
+              </h2>
+              <h3>Resolution Time</h3>
+            </div>
+          </Spin>
+          <Charts data={this.formatData} />{' '}
         </div>
       </>
     );

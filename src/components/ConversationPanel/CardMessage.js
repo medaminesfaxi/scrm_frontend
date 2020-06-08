@@ -5,10 +5,28 @@ import { withRouter } from 'react-router-dom';
 
 const colors = {
   facebook: '#3b5998',
-  instagram: '#f46f30'
+  instagram: '#f46f30',
 };
 const { Meta } = Card;
 class CardMessage extends Component {
+  state = {
+    imageIsReady: false,
+  };
+  componentDidMount() {
+    const img = new Image();
+    img.onload = () => {
+      this.setState({
+        imageIsReady: true,
+      });
+    };
+    img.onerror = () => {
+      this.setState({
+        imageIsReady: true,
+      });
+    };
+    img.src = this.props.customerAvatar;
+  }
+
   render() {
     const { from, channel, lastMessage } = this.props;
     return (
@@ -20,13 +38,26 @@ class CardMessage extends Component {
               ? {
                   position: 'relative',
                   background: '#D8ECFF',
-                  border: '2px solid rgb(13, 140, 255)'
+                  border: '2px solid rgb(13, 140, 255)',
                 }
               : { position: 'relative' }
           }
         >
           <Meta
-            avatar={<Avatar icon="user" />}
+            avatar={
+              this.state.imageIsReady ? (
+                <Avatar src={this.props.customerAvatar} icon="user" />
+              ) : (
+                <Icon
+                  type="loading"
+                  spin
+                  style={{
+                    color: '#1890ff',
+                    fontSize: '26px',
+                  }}
+                />
+              )
+            }
             title={from}
             description={formatText(lastMessage)}
           />
@@ -38,7 +69,7 @@ class CardMessage extends Component {
               right: '0',
               color: colors[channel],
               bottom: 0,
-              fontSize: '22px'
+              fontSize: '22px',
             }}
           />
         </Card>

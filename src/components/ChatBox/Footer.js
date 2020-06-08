@@ -1,62 +1,82 @@
 import React, { Component } from 'react';
 import { Button, Tag, Input, Icon, Select } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
-import AddMacro from '../AddMacro';
-
+import { Request } from './../../shared/utils';
 const { Option } = Select;
 export default class Footer extends Component {
   state = {
     tags: this.props.tags,
     inputVisible: false,
-    inputValue: ''
+    inputValue: '',
+    macros: [],
   };
-  onChangeAssignSelection = value => {
+  componentDidMount() {
+    const fetchData = async () => {
+      let res = await Request('GET', '/api/macro');
+      this.setState({ macros: res.data });
+    };
+    fetchData();
+  }
+  onChangeAssignSelection = (value) => {
     console.log(`selected ${value}`);
   };
-  onChangeStatusSelection = value => {
+  onChangeStatusSelection = (value) => {
     console.log(`selected ${value}`);
-  };
-  handleClose = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
-    this.setState({ tags });
   };
 
   showInput = () => {
     this.setState({ inputVisible: true }, () => this.input.focus());
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ inputValue: e.target.value });
   };
 
-  handleInputConfirm = () => {
+  handleInputConfirm = async () => {
     const { inputValue } = this.state;
     let { tags } = this.state;
     if (inputValue && tags.indexOf(inputValue) === -1) {
-      tags = [...tags, inputValue];
+      let res = await Request(
+        'POST',
+        '/api/tags/' + this.props.conversationId,
+        {
+          name: inputValue,
+        }
+      );
+      tags = [...tags, { _id: res.data._id, name: inputValue }];
     }
     this.setState({
       tags,
       inputVisible: false,
-      inputValue: ''
+      inputValue: '',
     });
   };
-  saveInputRef = input => (this.input = input);
 
-  forMap = tag => {
+  handleClose = async (removedTag) => {
+    console.log(removedTag);
+    await Request('PUT', '/api/tags/' + this.props.conversationId, {
+      _id: removedTag,
+    });
+    const tags = this.state.tags.filter((tag) => tag._id !== removedTag);
+    this.setState({ tags });
+  };
+
+  saveInputRef = (input) => (this.input = input);
+
+  forMap = (tag) => {
     const tagElem = (
       <Tag
         closable
-        onClose={e => {
+        onClose={(e) => {
           e.preventDefault();
-          this.handleClose(tag);
+          this.handleClose(tag._id);
         }}
       >
-        {tag}
+        {tag.name}
       </Tag>
     );
     return (
-      <span key={tag} style={{ display: 'inline-block' }}>
+      <span key={tag._id} style={{ display: 'inline-block' }}>
         {tagElem}
       </span>
     );
@@ -69,32 +89,29 @@ export default class Footer extends Component {
       <div
         style={{
           padding: '12px',
-          background: '#fff'
+          background: '#fff',
         }}
       >
-        {this.props.disabled && (
-          <>
-            <Button icon="book" size="small" onClick={this.props.addNote}>
-              Add note
-            </Button>
-            <Select
-              value={this.props.selectedMacro}
-              size="small"
-              placeholder="Use macros"
-              style={{ width: 120, marginLeft: '36px' }}
-              onSelect={this.props.useMacro}
-            >
-              {Object.keys(this.props.macros).map(key => {
-                return (
-                  <Option key={key} value={key}>
-                    {key}
-                  </Option>
-                );
-              })}
-            </Select>
-            <AddMacro />
-          </>
-        )}
+        <>
+          <Button icon="book" size="small" onClick={this.props.addNote}>
+            Add note
+          </Button>
+          <Select
+            value={this.props.selectedMacro}
+            size="small"
+            placeholder="Use macros"
+            style={{ width: 120, marginLeft: '36px' }}
+            onSelect={this.props.useMacro}
+          >
+            {this.state.macros.map((macro) => {
+              return (
+                <Option key={macro._id} value={macro.text}>
+                  {macro.name}
+                </Option>
+              );
+            })}
+          </Select>
+        </>
         <span
           style={{
             margin: '0 8px 0 36px',
@@ -102,7 +119,7 @@ export default class Footer extends Component {
             color: '#fff',
             padding: '2px 8px',
             fontSize: '12px',
-            borderRadius: '4px'
+            borderRadius: '4px',
           }}
         >
           Tags
@@ -114,9 +131,9 @@ export default class Footer extends Component {
               opacity: 0,
               type: 'from',
               duration: 100,
-              onComplete: e => {
+              onComplete: (e) => {
                 e.target.style = '';
-              }
+              },
             }}
             leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
             appear={false}
@@ -142,7 +159,7 @@ export default class Footer extends Component {
             style={{
               background: '#fff',
               borderStyle: 'dashed',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <Icon type="plus" /> New Tag

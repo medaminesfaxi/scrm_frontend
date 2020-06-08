@@ -5,24 +5,26 @@ import AddUserForm from './AddUserForm';
 class AddUserDrawer extends React.Component {
   state = {
     visible: false,
-    confirmLoading: false
+    confirmLoading: false,
+    loading: false,
+    skillsOptions: [],
+    languagesOptions: [],
   };
-
   showModal = () => {
     this.setState({
-      visible: true
+      visible: true,
     });
   };
 
   handleOk = () => {
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
   handleCancel = () => {
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
@@ -31,6 +33,7 @@ class AddUserDrawer extends React.Component {
     return (
       <div>
         <Button
+          loading={this.props.optionsLoading}
           type="primary"
           icon="plus"
           style={{ marginBottom: '22px' }}
@@ -46,6 +49,8 @@ class AddUserDrawer extends React.Component {
           visible={visible}
         >
           <AddUserForm
+            skillsOptions={this.props.skillsOptions}
+            languagesOptions={this.props.languagesOptions}
             handleOk={this.handleOk}
             handleCancel={this.handleCancel}
             handleCreateUser={this.props.handleCreateUser}

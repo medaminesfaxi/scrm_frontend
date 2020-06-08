@@ -1,5 +1,7 @@
 import React from 'react';
 import moment from 'moment';
+import { Avatar } from 'antd';
+
 export default function MessageBox(props) {
   const {
     type,
@@ -8,9 +10,8 @@ export default function MessageBox(props) {
     left,
     author,
     hasError,
-    text
+    text,
   } = props;
-
   let time;
   if (timestamp) {
     if (timestampFormat === 'calendar') {
@@ -22,40 +23,40 @@ export default function MessageBox(props) {
     }
   }
   if (type === 'text' || type === 'indicator') {
-    return (
-      <div
-        className={`react-chat-messageBox ${
-          left ? 'react-chat-messageBoxLeft' : 'react-chat-messageBoxRight'
-        }`}
-      >
-        <img
-          alt="avater img"
-          src={
-            author.avatarUrl
-              ? author.avatarUrl
-              : 'https://image.flaticon.com/icons/svg/2446/2446032.svg'
-          }
-          className={`react-chat-avatar ${
-            left ? 'react-chat-avatarLeft' : 'react-chat-avatarRight'
-          }`}
-        />
+    if (typeof author !== 'undefined')
+      return (
         <div
-          className={`react-chat-message ${
-            left ? 'react-chat-messageLeft' : 'react-chat-messageRight'
+          className={`react-chat-messageBox ${
+            left ? 'react-chat-messageBoxLeft' : 'react-chat-messageBoxRight'
           }`}
         >
-          <div className="react-chat-additional">{author.fullname}</div>
           <div
-            className={`react-chat-bubble ${
-              left ? 'react-chat-leftBubble' : 'react-chat-rightBubble'
-            } ${hasError ? 'react-chat-bubbleWithError' : ''}`}
+            className={`react-chat-avatar ${
+              left ? 'react-chat-avatarLeft' : 'react-chat-avatarRight'
+            }`}
           >
-            {text}
+            <Avatar icon="user" src={author.avatarUrl} />
           </div>
-          <div className="react-chat-additional">{time !== null && time}</div>
+          <div
+            className={`react-chat-message ${
+              left ? 'react-chat-messageLeft' : 'react-chat-messageRight'
+            }`}
+          >
+            <div className="react-chat-additional">{author.fullname}</div>
+            <div
+              className={`react-chat-bubble ${
+                left ? 'react-chat-leftBubble' : 'react-chat-rightBubble'
+              } ${hasError ? 'react-chat-bubbleWithError' : ''}`}
+            >
+              {text}
+            </div>
+            <div className="react-chat-additional">{time !== null && time}</div>
+          </div>
         </div>
-      </div>
-    );
+      );
+    else {
+      return <div className="react-chat-notification">{text}</div>;
+    }
   } else if (type === 'note') {
     return (
       <div className="react-chat-note react-chat-messageBoxRight">

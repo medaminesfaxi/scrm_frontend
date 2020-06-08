@@ -8,17 +8,26 @@ import Conversations from './pages/Conversations';
 import Account from './pages/Account';
 import Settings from './pages/Settings';
 import Users from './pages/Users';
+import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
 import Macros from './pages/Macros';
+import ConversationNotFound from './pages/ConversationNotFound';
+
 class App extends Component {
+  state = {
+    user: null,
+  };
+
   render() {
     return (
       <>
         <Router>
           <Switch>
             <Route path="/login" component={Login} />
-            <Route path="/reset" component={ResetPassword} />
+            <Route exact path="/" component={Login} />
+            <Route path="/forgotPassword" component={ForgotPassword} />
+            <Route path="/reset/:token" component={ResetPassword} />
             <Route path="/Signup" component={Signup} />
             <PrivateRoute path="/conversations/:id" component={Conversations} />
             <PrivateRoute path="/conversations" component={Conversations} />
@@ -31,7 +40,9 @@ class App extends Component {
               component={Dashboard}
             />
             <PrivateRoute path="/Users" roles="ADMIN" component={Users} />
+
             <Route component={NotFound} />
+            <Route path="/error" component={ConversationNotFound} />
           </Switch>
         </Router>
       </>

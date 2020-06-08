@@ -5,34 +5,34 @@ import EditUserForm from './EditUserForm';
 class EditUserDrawer extends React.Component {
   state = {
     visible: false,
-    confirmLoading: false
+    confirmLoading: false,
   };
 
   showModal = () => {
     this.setState({
-      visible: true
+      visible: true,
     });
   };
 
   handleOk = () => {
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
   handleCancel = () => {
     this.setState({
-      visible: false
+      visible: false,
     });
   };
 
   render() {
     const { visible } = this.state;
-    const { loading, fullname, user_id } = this.props;
+    const { fullname } = this.props;
     return (
       <>
         <Button
-          loading={loading}
+          loading={this.props.optionsLoading}
           shape="circle"
           onClick={this.showModal}
           type="primary"
@@ -40,16 +40,20 @@ class EditUserDrawer extends React.Component {
           icon="edit"
         ></Button>
         <Drawer
-          title={'Edit user ' + fullname + ' #' + user_id}
+          title={'Edit user ' + fullname}
           width={460}
           footer={null}
           onClose={this.handleCancel}
           visible={visible}
         >
           <EditUserForm
+            userId={this.props.userId}
+            checkedLanguages={this.props.checkedLanguages}
+            checkedSkills={this.props.checkedSkills}
+            skillsOptions={this.props.skillsOptions}
+            languagesOptions={this.props.languagesOptions}
             handleCancel={this.handleCancel}
             handleOk={this.handleOk}
-            user_id={user_id}
           />
         </Drawer>
       </>

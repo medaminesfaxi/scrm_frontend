@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styles from '../pages/styles.module.css';
 import { Icon, Popconfirm } from 'antd';
 
-const Note = ({ text, deleteNote, id }) => {
+const Note = ({ text, deleteNote, id, loading }) => {
   return (
     <div className={styles.note}>
       {text}
@@ -12,12 +12,16 @@ const Note = ({ text, deleteNote, id }) => {
         cancelText="No"
         onConfirm={() => deleteNote(id)}
       >
-        <Icon
-          className={styles.delete__note}
-          type="delete"
-          theme="twoTone"
-          twoToneColor="#eb2f96"
-        />
+        {loading ? (
+          <Icon className={styles.delete__note} type="loading" />
+        ) : (
+          <Icon
+            className={styles.delete__note}
+            type="delete"
+            theme="twoTone"
+            twoToneColor="#eb2f96"
+          />
+        )}
       </Popconfirm>
     </div>
   );
@@ -34,21 +38,21 @@ export default class Notes extends Component {
         style={{
           background: '#fff',
           padding: '26px 18px',
-          height: '50%',
-          maxHeight: '500px',
-          overflowY: 'auto'
+          flex: '1 0',
+          overflowY: 'auto',
         }}
       >
         <h2>
           <Icon type="book" style={{ color: 'orange' }}></Icon> Notes:
         </h2>
-        {notes.map(note => {
+        {notes.map((note) => {
           return (
             <Note
-              key={note.id}
+              key={note._id}
+              loading={this.props.loading}
               id={note.id}
               text={note.text}
-              deleteNote={this.props.deleteNote}
+              deleteNote={this.props.deleteNote.bind(null, note._id)}
             />
           );
         })}

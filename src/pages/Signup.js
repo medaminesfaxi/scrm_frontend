@@ -2,30 +2,31 @@ import React from 'react';
 import { Form, Input, Button, Icon } from 'antd';
 import { Link, Redirect, withRouter } from 'react-router-dom';
 import styles from './styles.module.css';
-import { emailPattern, notification } from './../shared/utils';
+import { emailPattern } from './../shared/utils';
 import { authService } from './../services/authService';
 
 class SignupForm extends React.Component {
   state = {
     confirmDirty: false,
-    loading: false
+    loading: false,
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
-        try {
-          this.setState({ loading: true });
-          authService.login(values.email, values.password);
-          notification('success', 'Signed up succesfully!');
-        } catch (e) {
-          this.setState({ loading: false });
-        }
+        this.setState({ loading: true });
+        await authService.signup(
+          values.fullname,
+          values.email,
+          values.password
+        );
+        this.setState({ loading: false });
       }
     });
   };
-  handleConfirmBlur = e => {
+
+  handleConfirmBlur = (e) => {
     const { value } = e.target;
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
@@ -63,8 +64,8 @@ class SignupForm extends React.Component {
                 rules: [
                   { required: true, message: 'Please input your Full Name' },
                   { min: 4 },
-                  { max: 20 }
-                ]
+                  { max: 20 },
+                ],
               })(
                 <Input
                   prefix={<Icon type="user" className={styles.input__icon} />}
@@ -78,9 +79,9 @@ class SignupForm extends React.Component {
                   { required: true, message: 'Please input your Email!' },
                   {
                     pattern: emailPattern,
-                    message: 'Please input a valid Email!'
-                  }
-                ]
+                    message: 'Please input a valid Email!',
+                  },
+                ],
               })(
                 <Input
                   prefix={<Icon type="mail" className={styles.input__icon} />}
@@ -93,8 +94,8 @@ class SignupForm extends React.Component {
                 rules: [
                   { required: true, message: 'Please input your password!' },
                   { min: 6 },
-                  { validator: this.validateToNextPassword }
-                ]
+                  { validator: this.validateToNextPassword },
+                ],
               })(
                 <Input.Password
                   prefix={<Icon type="lock" className={styles.input__icon} />}
@@ -107,10 +108,10 @@ class SignupForm extends React.Component {
                 rules: [
                   {
                     required: true,
-                    message: 'Please confirm your password!'
+                    message: 'Please confirm your password!',
                   },
-                  { validator: this.compareToFirstPassword }
-                ]
+                  { validator: this.compareToFirstPassword },
+                ],
               })(
                 <Input.Password
                   onBlur={this.handleConfirmBlur}

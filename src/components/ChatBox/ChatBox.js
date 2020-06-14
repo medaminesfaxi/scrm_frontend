@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Card, Icon } from 'antd';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
 import Header from './Header';
@@ -15,6 +15,7 @@ class ChatBox extends React.Component {
     note: false,
     notfound: false,
     inputText: '',
+    messageListLoading: false,
     conversation: { messages: [] },
     dataLoading: true,
     loading: false,
@@ -22,6 +23,7 @@ class ChatBox extends React.Component {
   };
   componentDidMount() {
     this.OldconversationID = this.props.conversationId.id;
+    this.skip = 0;
     this.mounted = true;
     this.io = IOClient(process.env.REACT_APP_API_URL);
     this.io.on('received', (data) => {
@@ -45,10 +47,14 @@ class ChatBox extends React.Component {
       this.setState({ dataLoading: true });
       let res = await Request(
         'GET',
-        '/api/conversations/' + this.props.conversationId.id
+        '/api/conversations/' +
+          this.props.conversationId.id +
+          '?skip=' +
+          this.skip
       );
       if (this.mounted)
         if (res && res.data.length > 0) {
+          console.log(res.data[0]);
           this.setState(
             {
               conversation: res.data[0],
@@ -68,7 +74,6 @@ class ChatBox extends React.Component {
           });
     };
     fetchData();
-    this.scrollToBottom();
   }
   componentDidUpdate() {
     this.newConversationID = this.props.conversationId.id;
@@ -103,7 +108,7 @@ class ChatBox extends React.Component {
       };
       if (this.mounted) fetchData();
     }
-    this.scrollToBottom();
+    if (this.skip === 0) this.scrollToBottom();
   }
   componentWillUnmount() {
     this.mounted = false;
@@ -143,6 +148,7 @@ class ChatBox extends React.Component {
         loading: false,
       });
     }
+    this.scrollToBottom();
   };
 
   handleOnChange = (e) => {
@@ -199,10 +205,29 @@ class ChatBox extends React.Component {
     );
     if (res.status === 200) window.location = '/conversations';
   };
-
+  fetchMessages = async () => {
+    if (this.messagesList.scrollTop === 0 && this.skip !== null) {
+      this.skip += 6;
+      this.setState({ messageListLoading: true });
+      let res = await Request(
+        'GET',
+        '/api/conversations/' +
+          this.props.conversationId.id +
+          '?skip=' +
+          this.skip
+      );
+      if (res.data.length > 0) {
+        let c = this.state.conversation;
+        c.messages = [...res.data, ...c.messages];
+        this.setState({ conversation: c, messageListLoading: false });
+        this.messagesList.scrollTop += 500;
+      } else {
+        this.skip = null;
+        this.setState({ messageListLoading: false });
+      }
+    }
+  };
   render() {
-    let scrollBehavior =
-      this.state.conversation.messages.length > 50 ? 'auto' : 'smooth';
     if (this.state.dataLoading) {
       return (
         <Card
@@ -247,9 +272,22 @@ class ChatBox extends React.Component {
           <div className="react-chat-container">
             <div className="react-chat-row">
               <div className="react-chat-viewerBox">
+                {this.state.messageListLoading ? (
+                  <Icon
+                    type="loading"
+                    spin
+                    style={{
+                      position: 'relative',
+                      top: '30px',
+                      textAlign: 'center',
+                      color: '#1890ff',
+                      fontSize: '26px',
+                    }}
+                  />
+                ) : null}
                 <div
+                  onScroll={this.fetchMessages}
                   className="react-chat-messagesList"
-                  style={{ scrollBehavior }}
                   ref={(el) => (this.messagesList = el)}
                 >
                   <div className="react-chat-messagesListContent">

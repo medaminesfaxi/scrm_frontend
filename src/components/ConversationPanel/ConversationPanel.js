@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Divider, Tabs, Skeleton, Result } from 'antd';
+import { Card, Divider, Tabs, Skeleton, Result, Icon } from 'antd';
 import CardMessage from './CardMessage';
 import Filter from './Filter';
 import ShowOnlineAgents from './ShowOnlineAgents';
@@ -16,11 +16,13 @@ class ConversationPanel extends Component {
     checkedTags: [],
     filteredData: [],
     prevConversations: [],
+    loadingConversation: false,
     searchLoading: false,
     search: '',
     activeTab: '1',
   };
   componentDidMount() {
+    this.skip = 0;
     this.mounted = true;
     this.socket = IOClient(process.env.REACT_APP_API_URL);
     this.socket.emit('join', authService.getCurrentUser().id);
@@ -93,7 +95,12 @@ class ConversationPanel extends Component {
     });
   };
   fetchData = (activeKey) => {
-    this.setState({ search: '' });
+    this.skip = 0;
+    this.setState({
+      search: '',
+      loadingConversation: false,
+    });
+
     switch (activeKey) {
       case '1':
         this.setState({
@@ -101,7 +108,10 @@ class ConversationPanel extends Component {
           loading: { ...this.state.loading, assigned: true },
         });
         const fetchAssignedConv = async () => {
-          let res = await Request('GET', '/api/conversations');
+          let res = await Request(
+            'GET',
+            '/api/conversations?skip=' + this.skip
+          );
           if (this.state.activeTab === '1') {
             this.setState({
               conversations: res.data,
@@ -117,7 +127,10 @@ class ConversationPanel extends Component {
           loading: { ...this.state.loading, handoff: true },
         });
         const fetchHandOffConv = async () => {
-          let res = await Request('GET', '/api/conversations/handoff');
+          let res = await Request(
+            'GET',
+            '/api/conversations/handoff?skip=' + this.skip
+          );
           if (this.state.activeTab === '2') {
             this.setState({
               conversations: res.data,
@@ -133,7 +146,10 @@ class ConversationPanel extends Component {
           loading: { ...this.state.loading, bot: true },
         });
         const fetchBotConv = async () => {
-          let res = await Request('GET', '/api/conversations/bot');
+          let res = await Request(
+            'GET',
+            '/api/conversations/bot?skip=' + this.skip
+          );
           if (this.state.activeTab === '3') {
             this.setState({
               conversations: res.data,
@@ -166,6 +182,78 @@ class ConversationPanel extends Component {
       activeTab: '0',
       conversations: res.data,
     });
+  };
+  fetchMoreBotConv = async (event) => {
+    if (
+      event.target.offsetHeight + event.target.scrollTop >=
+        event.target.scrollHeight &&
+      this.skip !== null &&
+      this.state.activeTab === '3'
+    ) {
+      this.skip += 6;
+      this.setState({ loadingConversation: true });
+      let res = await Request(
+        'GET',
+        '/api/conversations/bot?skip=' + this.skip
+      );
+      if (res.data.length > 0) {
+        this.setState({
+          conversations: [...this.state.conversations, ...res.data],
+          loadingConversation: false,
+        });
+      } else {
+        this.skip = null;
+        this.setState({ loadingConversation: false });
+      }
+    }
+  };
+  fetchMoreHandoffConv = async (event) => {
+    if (
+      event.target.offsetHeight + event.target.scrollTop >=
+        event.target.scrollHeight &&
+      this.state.activeTab === '2' &&
+      this.skip !== null
+    ) {
+      this.skip += 6;
+      this.setState({ loadingConversation: true });
+      let res = await Request(
+        'GET',
+        '/api/conversations/handoff?skip=' + this.skip
+      );
+
+      if (res.data.length > 0) {
+        this.setState({
+          conversations: [...this.state.conversations, ...res.data],
+          loadingConversation: false,
+        });
+      } else {
+        this.skip = null;
+        this.setState({ loadingConversation: false });
+      }
+    }
+  };
+  fetchMoreAssignedConv = async (event) => {
+    if (
+      event.target.offsetHeight + event.target.scrollTop >=
+        event.target.scrollHeight &&
+      this.state.activeTab === '1' &&
+      this.skip !== null
+    ) {
+      this.skip += 6;
+      this.setState({ loadingConversation: true });
+      let res = await Request('GET', '/api/conversations?skip=' + this.skip);
+      if (this.state.activeTab === '1') {
+        if (res.data.length > 0) {
+          this.setState({
+            conversations: [...this.state.conversations, ...res.data],
+            loadingConversation: false,
+          });
+        } else {
+          this.skip = null;
+          this.setState({ loadingConversation: false });
+        }
+      }
+    }
   };
   render() {
     let conversations =
@@ -201,21 +289,30 @@ class ConversationPanel extends Component {
               loading={this.state.loading.assigned}
               paragraph={{ rows: 10 }}
             >
-              {conversations.map((conversation) => (
-                <Link
-                  to={`/conversations/${conversation.id}`}
-                  key={conversation.id}
-                >
-                  <CardMessage
-                    customerAvatar={conversation.customerAvatar}
-                    assignedTo={conversation.assigned}
-                    conversationId={conversation.id}
-                    lastMessage={conversation.lastMessage}
-                    channel={conversation.channel}
-                    from={conversation.from}
-                  />
-                </Link>
-              ))}
+              <div
+                onScroll={this.fetchMoreAssignedConv}
+                style={{
+                  maxHeight: '450px',
+                  overflow: 'auto',
+                  paddingRight: ' 8px',
+                }}
+              >
+                {conversations.map((conversation) => (
+                  <Link
+                    to={`/conversations/${conversation.id}`}
+                    key={conversation.id}
+                  >
+                    <CardMessage
+                      customerAvatar={conversation.customerAvatar}
+                      assignedTo={conversation.assigned}
+                      conversationId={conversation.id}
+                      lastMessage={conversation.lastMessage}
+                      channel={conversation.channel}
+                      from={conversation.from}
+                    />
+                  </Link>
+                ))}
+              </div>
               {conversations.length === 0 ? <Result status="404" /> : null}
             </Skeleton>
           </TabPane>
@@ -224,45 +321,76 @@ class ConversationPanel extends Component {
               loading={this.state.loading.handoff}
               paragraph={{ rows: 10 }}
             >
-              {conversations.map((conversation) => (
-                <Link
-                  to={`/conversations/${conversation.id}`}
-                  key={conversation.id}
-                >
-                  <CardMessage
-                    customerAvatar={conversation.customerAvatar}
-                    assignedTo={conversation.assigned}
-                    conversationId={conversation.id}
-                    lastMessage={conversation.lastMessage}
-                    channel={conversation.channel}
-                    from={conversation.from}
-                  />
-                </Link>
-              ))}
+              <div
+                onScroll={this.fetchMoreHandoffConv}
+                style={{
+                  maxHeight: '450px',
+                  overflow: 'auto',
+                  paddingRight: ' 8px',
+                }}
+              >
+                {conversations.map((conversation) => (
+                  <Link
+                    to={`/conversations/${conversation.id}`}
+                    key={conversation.id}
+                  >
+                    <CardMessage
+                      customerAvatar={conversation.customerAvatar}
+                      assignedTo={conversation.assigned}
+                      conversationId={conversation.id}
+                      lastMessage={conversation.lastMessage}
+                      channel={conversation.channel}
+                      from={conversation.from}
+                    />
+                  </Link>
+                ))}
+              </div>
               {conversations.length === 0 ? <Result status="404" /> : null}
             </Skeleton>
           </TabPane>
           <TabPane tab="BOT" key="3">
             <Skeleton loading={this.state.loading.bot} paragraph={{ rows: 10 }}>
-              {conversations.map((conversation) => (
-                <Link
-                  to={`/conversations/${conversation.id}`}
-                  key={conversation.id}
-                >
-                  <CardMessage
-                    customerAvatar={conversation.customerAvatar}
-                    assignedTo={conversation.assigned}
-                    conversationId={conversation.id}
-                    lastMessage={conversation.lastMessage}
-                    channel={conversation.channel}
-                    from={conversation.from}
-                  />
-                </Link>
-              ))}
+              <div
+                onScroll={this.fetchMoreBotConv}
+                style={{
+                  maxHeight: '450px',
+                  overflow: 'auto',
+                  paddingRight: ' 8px',
+                }}
+              >
+                {conversations.map((conversation) => (
+                  <Link
+                    to={`/conversations/${conversation.id}`}
+                    key={conversation.id}
+                  >
+                    <CardMessage
+                      customerAvatar={conversation.customerAvatar}
+                      assignedTo={conversation.assigned}
+                      conversationId={conversation.id}
+                      lastMessage={conversation.lastMessage}
+                      channel={conversation.channel}
+                      from={conversation.from}
+                    />
+                  </Link>
+                ))}
+              </div>
               {conversations.length === 0 ? <Result status="404" /> : null}
             </Skeleton>
           </TabPane>
         </Tabs>
+        {this.state.loadingConversation ? (
+          <Icon
+            type="loading"
+            spin
+            style={{
+              position: 'relative',
+              bottom: '-0px',
+              textAlign: 'center',
+              color: '#1890ff',
+              fontSize: '26px',
+            }}
+          />
+        ) : null}
         {this.state.activeTab === '0' && (
           <div
             style={{

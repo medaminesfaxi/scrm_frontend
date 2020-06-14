@@ -54,7 +54,6 @@ class ChatBox extends React.Component {
       );
       if (this.mounted)
         if (res && res.data.length > 0) {
-          console.log(res.data[0]);
           this.setState(
             {
               conversation: res.data[0],
@@ -83,7 +82,10 @@ class ChatBox extends React.Component {
         this.setState({ dataLoading: true });
         let res = await Request(
           'GET',
-          '/api/conversations/' + this.props.conversationId.id
+          '/api/conversations/' +
+            this.props.conversationId.id +
+            '?skip=' +
+            this.skip
         );
         if (this.mounted)
           this.io.emit('leave', this.state.conversation.customer[0].id);
@@ -103,7 +105,6 @@ class ChatBox extends React.Component {
         } else
           this.setState({
             dataLoading: false,
-            notfound: true,
           });
       };
       if (this.mounted) fetchData();
@@ -207,7 +208,7 @@ class ChatBox extends React.Component {
   };
   fetchMessages = async () => {
     if (this.messagesList.scrollTop === 0 && this.skip !== null) {
-      this.skip += 6;
+      this.skip += 10;
       this.setState({ messageListLoading: true });
       let res = await Request(
         'GET',

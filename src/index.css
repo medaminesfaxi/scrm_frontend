@@ -52,7 +52,7 @@ img {
 
 .ant-tabs-content {
   padding-right: 8px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .ant-form-explain {

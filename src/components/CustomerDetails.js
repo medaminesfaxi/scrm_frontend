@@ -9,17 +9,19 @@ class CustomerDetails extends React.Component {
     imageIsReady: false,
     src: '',
   };
-  componentDidUpdate() {
-    if (this.props.details[0].avatarSrc && this.state.src === '') {
-      const img = new Image();
-      img.src = this.props.details[0].avatarSrc;
-      img.onload = () => {
-        this.setState({
-          imageIsReady: true,
-          src: this.props.details[0].avatarSrc,
-        });
-      };
-    }
+  componentDidMount() {
+    const img = new Image();
+    img.src = this.props.details[0].avatarSrc;
+    img.onload = () => {
+      this.setState({
+        imageIsReady: true,
+      });
+    };
+    img.onerror = () => {
+      this.setState({
+        imageIsReady: true,
+      });
+    };
   }
 
   render() {

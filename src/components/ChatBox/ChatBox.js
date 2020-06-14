@@ -78,6 +78,7 @@ class ChatBox extends React.Component {
     this.newConversationID = this.props.conversationId.id;
     if (this.newConversationID !== this.OldconversationID) {
       this.OldconversationID = this.newConversationID;
+      this.skip = 0;
       const fetchData = async () => {
         this.setState({ dataLoading: true });
         let res = await Request(
@@ -221,7 +222,7 @@ class ChatBox extends React.Component {
         let c = this.state.conversation;
         c.messages = [...res.data, ...c.messages];
         this.setState({ conversation: c, messageListLoading: false });
-        this.messagesList.scrollTop += 500;
+        this.messagesList.scrollTop += 250;
       } else {
         this.skip = null;
         this.setState({ messageListLoading: false });

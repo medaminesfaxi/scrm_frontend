@@ -70,8 +70,12 @@ export const Request = async (type, path, data = {}) => {
     return res;
   } catch (e) {
     handleResponse(e.response);
-    if (typeof e.response !== 'undefined' && e.response.data !== null)
-      centeredNotification('danger', e.response.data.error);
+    if (typeof e.response !== 'undefined' && e.response.data !== null) {
+      if (typeof e.response.data.error.message !== 'undefined')
+        centeredNotification('danger', e.response.data.error.message);
+      // muler error
+      else centeredNotification('danger', e.response.data.error);
+    }
     return false;
   }
 };

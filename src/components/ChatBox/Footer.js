@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Tag, Input, Icon, Select } from 'antd';
+import { Button, Tag, Input, Icon, Select, message, Upload } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
-import { Request } from './../../shared/utils';
+import { Request, authHeader } from './../../shared/utils';
+
 const { Option } = Select;
 export default class Footer extends Component {
   state = {
@@ -9,6 +10,7 @@ export default class Footer extends Component {
     inputVisible: false,
     inputValue: '',
     macros: [],
+    fileList: [],
   };
   componentDidMount() {
     const fetchData = async () => {
@@ -16,6 +18,9 @@ export default class Footer extends Component {
       this.setState({ macros: res.data });
     };
     fetchData();
+  }
+  onChange(info) {
+    console.log(info);
   }
   onChangeAssignSelection = (value) => {
     console.log(`selected ${value}`);
@@ -81,14 +86,62 @@ export default class Footer extends Component {
       </span>
     );
   };
-
+  handleChange = (info) => {
+    let fileList = [...info.fileList];
+    if (typeof info.file.status === 'undefined') {
+      this.setState({
+        fileList: [],
+      });
+    } else {
+      this.setState({ fileList });
+      if (info.file.status === 'done') {
+        let type;
+        if (info.file.response.type.indexOf('image') > -1) {
+          type = 'image';
+        } else type = 'file';
+        this.props.handleOnSendMessage(info.file.response.path, type);
+        setTimeout(() => {
+          this.setState({
+            fileList: [],
+          });
+        }, 1000);
+      }
+    }
+  };
   render() {
+    const props = {
+      action:
+        process.env.REACT_APP_API_URL +
+        'api/conversations/attachment/' +
+        this.props.conversationId,
+      headers: {
+        token: authHeader(),
+      },
+      onChange: this.handleChange,
+      beforeUpload: (file) => {
+        const validType =
+          file.type ===
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+          file.type === 'image/jpeg' ||
+          file.type === 'image/gif' ||
+          file.type === 'image/png' ||
+          file.type === 'application/pdf';
+        if (!validType) {
+          message.error('unsupported file!');
+        }
+        const isLt20M = file.size / 1024 / 1024 < 20;
+        if (!isLt20M) {
+          message.error('file must be smaller than 20MB!');
+        }
+        return validType && isLt20M;
+      },
+    };
     const { tags, inputVisible, inputValue } = this.state;
     const tagChild = tags.map(this.forMap);
     return (
       <div
         style={{
-          padding: '12px',
+          padding: '12px 12px 20px 12px',
           background: '#fff',
         }}
       >
@@ -142,16 +195,18 @@ export default class Footer extends Component {
           </TweenOneGroup>
         </div>
         {inputVisible && (
-          <Input
-            ref={this.saveInputRef}
-            type="text"
-            size="small"
-            style={{ width: 78 }}
-            value={inputValue}
-            onChange={this.handleInputChange}
-            onBlur={this.handleInputConfirm}
-            onPressEnter={this.handleInputConfirm}
-          />
+          <>
+            <Input
+              ref={this.saveInputRef}
+              type="text"
+              size="small"
+              style={{ width: 78 }}
+              value={inputValue}
+              onChange={this.handleInputChange}
+              onBlur={this.handleInputConfirm}
+              onPressEnter={this.handleInputConfirm}
+            ></Input>
+          </>
         )}
         {!inputVisible && (
           <Tag
@@ -165,6 +220,17 @@ export default class Footer extends Component {
             <Icon type="plus" /> New Tag
           </Tag>
         )}
+        <Upload {...props} fileList={this.state.fileList}>
+          <Button
+            disabled={this.state.fileList.length > 0}
+            style={{
+              padding: '0 6px',
+              marginLeft: '290px',
+            }}
+          >
+            <Icon type="paper-clip" /> Send an attachment
+          </Button>
+        </Upload>
       </div>
     );
   }

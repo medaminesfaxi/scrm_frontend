@@ -38,10 +38,11 @@ class ChatBox extends React.Component {
             },
             text: data.text,
             timestamp: data.timestamp,
-            type: 'text',
+            type: data.type,
           }),
         },
       });
+      this.scrollToBottom();
     });
     const fetchData = async () => {
       this.setState({ dataLoading: true });
@@ -116,7 +117,7 @@ class ChatBox extends React.Component {
     this.mounted = false;
     this.io.disconnect();
   }
-  handleOnSendMessage = async (message) => {
+  handleOnSendMessage = async (message, type) => {
     if (message.length > 0 && !this.state.note && !this.state.loading) {
       const currentUser = authService.getCurrentUser();
       const msg = {
@@ -126,6 +127,7 @@ class ChatBox extends React.Component {
           avatarUrl: currentUser.avatarSrc,
         },
         text: message,
+        type: type,
         timestamp: +new Date(),
       };
       this.setState({ loading: true });
@@ -164,7 +166,7 @@ class ChatBox extends React.Component {
   handleOnClick = (e) => {
     let str = this.strip(this.state.inputText);
     if (str.length) {
-      this.handleOnSendMessage(str);
+      this.handleOnSendMessage(str, 'text');
     }
   };
 
@@ -172,7 +174,7 @@ class ChatBox extends React.Component {
     if (e.shiftKey && e.charCode === 13) {
       let str = this.strip(this.state.inputText);
       if (str.length) {
-        this.handleOnSendMessage(str);
+        this.handleOnSendMessage(str, 'text');
       }
       e.preventDefault();
       return false;
@@ -254,7 +256,7 @@ class ChatBox extends React.Component {
         messageList = messages.map((message, idx) => {
           return (
             <MessageBox
-              type="text"
+              type={message.type}
               key={idx}
               left={message.author && message.author.id === customerID}
               timestampFormat="fromNow"
@@ -292,13 +294,17 @@ class ChatBox extends React.Component {
                   className="react-chat-messagesList"
                   ref={(el) => (this.messagesList = el)}
                 >
-                  <div className="react-chat-messagesListContent">
+                  <div
+                    className="react-chat-messagesListContent"
+                    style={{ scrollBehavior: 'smooth' }}
+                  >
                     {messageList}
                   </div>
                 </div>
                 {isBot || taken ? null : (
                   <>
                     <Footer
+                      handleOnSendMessage={this.handleOnSendMessage}
                       conversationId={this.props.conversationId.id}
                       selectedMacro={this.selectedMacro}
                       macros={this.state.macros}

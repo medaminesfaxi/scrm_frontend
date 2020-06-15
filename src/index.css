@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   min-width: 960px;
   background-color: #fff;
 }
@@ -152,7 +154,7 @@ img {
   align-items: center;
 }
 
-.chart-legend-item+.chart-legend-item {
+.chart-legend-item + .chart-legend-item {
   margin-left: 1rem;
 }
 

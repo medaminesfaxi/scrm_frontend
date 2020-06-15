@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button, Tag, Input, Icon, Select, message, Upload } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
 import { Request, authHeader } from './../../shared/utils';
 
 const { Option } = Select;
-export default class Footer extends Component {
+export default class Footer extends React.PureComponent {
   state = {
     tags: this.props.tags,
     inputVisible: false,
@@ -18,9 +18,6 @@ export default class Footer extends Component {
       this.setState({ macros: res.data });
     };
     fetchData();
-  }
-  onChange(info) {
-    console.log(info);
   }
   onChangeAssignSelection = (value) => {
     console.log(`selected ${value}`);
@@ -119,6 +116,7 @@ export default class Footer extends Component {
       },
       onChange: this.handleChange,
       beforeUpload: (file) => {
+        console.log(file.type);
         const validType =
           file.type ===
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -141,7 +139,7 @@ export default class Footer extends Component {
     return (
       <div
         style={{
-          padding: '12px 12px 20px 12px',
+          padding: '20px 12px 20px 12px',
           background: '#fff',
         }}
       >
@@ -224,8 +222,9 @@ export default class Footer extends Component {
           <Button
             disabled={this.state.fileList.length > 0}
             style={{
+              color: 'blue',
               padding: '0 6px',
-              marginLeft: '290px',
+              marginLeft: '350px',
             }}
           >
             <Icon type="paper-clip" /> Send an attachment

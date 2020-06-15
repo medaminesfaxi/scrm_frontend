@@ -65,7 +65,6 @@ export default function MessageBox(props) {
         return <ReactWebMediaPlayer video={text} />;
     }
   }
-
   if (typeof author !== 'undefined')
     return (
       <div

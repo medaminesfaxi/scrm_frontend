@@ -43,6 +43,16 @@ export default class Header extends Component {
   componentWillUnmount() {
     this.mounted = false;
   }
+  takeoverChat = async () => {
+    let res = await Request(
+      'PUT',
+      '/api/conversations/takeover/' + this.props.conversationId,
+      {
+        id: authService.getCurrentUser().id,
+      }
+    );
+    if (res.status === 200) window.location = '/conversations';
+  };
   render() {
     if (!this.props.taken) {
       return (
@@ -89,7 +99,7 @@ export default class Header extends Component {
     }
     if (this.props.isBot)
       return (
-        <Button type="primary" size="large" onClick={this.props.takeoverChat}>
+        <Button type="primary" size="large" onClick={this.takeoverChat}>
           Assign to me
         </Button>
       );

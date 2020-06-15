@@ -5,9 +5,15 @@ import ChatBox from './../components/ChatBox/ChatBox';
 import NoConversation from './../components/NoConversation';
 import Notes from '../components/Notes';
 import { Request } from '../shared/utils';
+import DisplayMessages from './../components/ChatBox/DisplayMessages';
+import Header from './../components/ChatBox/Header';
+import { Card } from 'antd';
+import { authService } from './../services/authService';
 export default class Conversations extends Component {
   state = {
     details: [{}],
+    assignedTo: '',
+    conversation: [],
     loading: false,
     notes: [],
     tags: [],
@@ -52,29 +58,45 @@ export default class Conversations extends Component {
     let newNotes = this.state.notes.filter((note) => note._id !== id);
     this.setState({ notes: newNotes, loading: false });
   };
-  getNotes = (notes) => {
-    this.setState({ notes: notes });
-  };
-  getCustomerDetails = (details) => {
-    this.setState({ details });
+  getConversation = (conversation) => {
+    this.setState({
+      conversation,
+      notes: conversation.notes,
+      assignedTo: conversation.assignedTo,
+      details: conversation.customer,
+    });
   };
   render() {
+    const userId = authService.getCurrentUser().id;
+    const taken = this.state.assignedTo !== userId;
+    const isBot = this.state.assignedTo === '999';
     return (
-      <main>
+      <main style={{ maxHeight: '100vh' }}>
         <ConversationPanel
           tags={this.state.tags}
           channels={this.state.channels}
         />
         {this.props.match.params.id ? (
           <>
-            <ChatBox
-              getCustomerDetails={this.getCustomerDetails}
-              getNotes={this.getNotes}
-              AddNewNote={this.AddNewNote}
-              conversationId={this.props.match.params}
-              tags={this.state.tags}
-              notes={this.state.notes}
-            />
+            <Card style={{ marginTop: 4, padding: 0, flex: '29%' }}>
+              <Header
+                conversationId={this.props.match.params}
+                taken={taken}
+                isBot={isBot}
+              />
+              <DisplayMessages
+                conversationId={this.props.match.params}
+                getConversation={this.getConversation}
+              />
+              <ChatBox
+                taken={taken}
+                isBot={isBot}
+                AddNewNote={this.AddNewNote}
+                conversationId={this.props.match.params}
+                tags={this.state.conversation.tags}
+                notes={this.state.notes}
+              />
+            </Card>
             <div
               style={{
                 marginTop: '4px',

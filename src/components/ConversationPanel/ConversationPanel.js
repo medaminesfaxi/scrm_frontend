@@ -263,6 +263,7 @@ class ConversationPanel extends Component {
     return (
       <Card
         style={{
+          width: '29%',
           marginTop: 4,
           flex: '1',
         }}

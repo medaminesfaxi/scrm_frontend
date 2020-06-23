@@ -91,17 +91,6 @@ class ChatBox extends React.PureComponent {
     this.childRef = input;
   };
 
-  takeoverChat = async () => {
-    let res = await Request(
-      'PUT',
-      '/api/conversations/takeover/' + this.props.conversationId.id,
-      {
-        id: authService.getCurrentUser().id,
-      }
-    );
-    if (res.status === 200) window.location = '/conversations';
-  };
-
   render() {
     if (this.state.notfound) {
       return <Redirect to="/error" />;

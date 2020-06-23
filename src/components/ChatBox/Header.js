@@ -12,7 +12,7 @@ export default class Header extends Component {
   onChangeAssignSelection = async (value) => {
     await Request(
       'PUT',
-      '/api/conversations/assign/' + this.props.conversationId,
+      '/api/conversations/assign/' + this.props.conversationId.id,
       {
         id: value,
       }
@@ -21,7 +21,7 @@ export default class Header extends Component {
   };
   resolveConversation = async () => {
     this.setState({ loading: true });
-    await Request('PUT', '/api/conversations/' + this.props.conversationId, {
+    await Request('PUT', '/api/conversations/' + this.props.conversationId.id, {
       author: authService.getCurrentUser().fullname,
     });
     this.setState({ loading: false });
@@ -46,7 +46,7 @@ export default class Header extends Component {
   takeoverChat = async () => {
     let res = await Request(
       'PUT',
-      '/api/conversations/takeover/' + this.props.conversationId,
+      '/api/conversations/takeover/' + this.props.conversationId.id,
       {
         id: authService.getCurrentUser().id,
       }

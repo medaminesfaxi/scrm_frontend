@@ -3,6 +3,7 @@
   padding-left: 15px;
   margin-right: auto;
   margin-left: auto;
+  flex: 1;
   width: 100%;
 }
 
@@ -16,7 +17,6 @@
 
 .react-chat-viewerBox {
   min-height: 100%;
-  max-height: 700px;
   color: #212529;
   background-color: #f9f9f9;
   display: flex;
@@ -27,8 +27,8 @@
 }
 
 .react-chat-messagesList {
-  max-height: 525px;
-  height: 525px;
+  height: 100%;
+  max-height: 480px;
   overflow-x: hidden;
   overflow-y: auto;
 }
